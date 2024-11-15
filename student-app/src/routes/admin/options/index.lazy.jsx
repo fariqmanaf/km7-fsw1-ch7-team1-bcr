@@ -5,8 +5,8 @@ import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Table from 'react-bootstrap/Table'
 import Button from 'react-bootstrap/Button'
-import { getOptions } from '../../service/options'
-import OptionItem from '../../components/Option/OptionItem'
+import { getOptions } from '../../../service/options'
+import OptionItem from '../../../components/Option/OptionItem'
 import ReactLoading from 'react-loading'
 
 export const Route = createLazyFileRoute('/admin/options/')({
@@ -74,7 +74,7 @@ function Option() {
           {user?.role_id === 1 && (
             <Button
               as={Link}
-              href={`/options/create`}
+              href={`/admin/options/create`}
               style={{
                 transition: 'all 0.3s',
                 backgroundColor: '#0d6efd',

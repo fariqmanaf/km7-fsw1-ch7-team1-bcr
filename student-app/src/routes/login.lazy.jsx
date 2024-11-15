@@ -17,17 +17,21 @@ function Login() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const { token } = useSelector((state) => state.auth);
+    const { token, user } = useSelector((state) => state.auth);
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
     useEffect(() => {
         // get token from local storage
-        if (token) {
-            navigate({ to: "/" });
+        if (user) {
+            {
+                user.role_id === 1
+                    ? navigate({ to: "/admin/cars" })
+                    : navigate({ to: "/cars" });
+            }
         }
-    }, [navigate, token]);
+    }, [navigate, user]);
 
     const onSubmit = async (event) => {
         event.preventDefault();
@@ -41,7 +45,6 @@ function Login() {
         const result = await login(body);
         if (result.success) {
             dispatch(setToken(result.data.token));
-            navigate({ to: "/cars" });
             return;
         }
 

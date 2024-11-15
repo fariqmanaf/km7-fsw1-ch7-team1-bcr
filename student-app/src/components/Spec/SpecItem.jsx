@@ -12,13 +12,13 @@ const SpecItem = ({ spec, user }) => {
           <td style={{ textAlign: "center" }}>
             <Button
               as={Link}
-              href={`/specs/edit/${spec?.id}`}
+              href={`/admin/specs/edit/${spec?.id}`}
               variant="warning"
               className="me-2"
             >
               Update
             </Button>
-            <Button as={Link} href={`/specs/${spec?.id}`} variant="danger">
+            <Button as={Link} href={`/admin/specs/${spec?.id}`} variant="danger">
               Delete
             </Button>
           </td>

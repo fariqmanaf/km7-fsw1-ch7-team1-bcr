@@ -7,7 +7,7 @@ const Protected = ({ children, roles }) => {
   const { token, user } = useSelector((state) => state.auth);
 
   if (!token) {
-    navigate({ to: "/login" });
+    navigate({ to: "/" });
     return;
   }
 

@@ -183,7 +183,7 @@ function NextForm() {
         if (success) {
             const carId = localStorage.getItem("carId");
             localStorage.removeItem("carId");
-            navigate({ to: `/cars/${carId}` });
+            navigate({ to: `/admin/cars/${carId}` });
         }
     }, [success]);
 
@@ -222,7 +222,7 @@ function NextForm() {
         dispatch(setModelsState(modelsState));
         dispatch(setOptionsState(userOptions));
         dispatch(setSpecsState(userSpecs));
-        navigate({ to: `/cars/${id}` });
+        navigate({ to: `/admin/cars/${id}` });
     }
 
     const scrollContainerStyle = {

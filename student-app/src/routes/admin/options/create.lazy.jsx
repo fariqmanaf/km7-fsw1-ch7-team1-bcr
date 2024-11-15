@@ -5,10 +5,10 @@ import Col from 'react-bootstrap/Col'
 import Card from 'react-bootstrap/Card'
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
-import { createOption } from '../../service/options'
+import { createOption } from '../../../service/options'
 import { IoArrowBackCircle } from 'react-icons/io5'
 import { toast } from 'react-toastify'
-import Protected from '../../components/Auth/Protected'
+import Protected from '../../../components/Auth/Protected'
 
 export const Route = createLazyFileRoute('/admin/options/create')({
   component: () => (
@@ -29,14 +29,14 @@ function CreateOption() {
     const result = await createOption(request)
     if (result?.success) {
       toast.success('Option created successfully!')
-      navigate({ to: '/options' })
+      navigate({ to: '/admin/options' })
     } else {
       toast.error(result?.message)
     }
   }
 
   function onClickBack() {
-    navigate({ to: '/specs' })
+    navigate({ to: '/admin/options' })
   }
 
   return (

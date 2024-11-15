@@ -4,12 +4,12 @@ import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Card from 'react-bootstrap/Card'
 import Button from 'react-bootstrap/Button'
-import { deleteSpec, getDetailSpec } from '../../service/spec'
+import { deleteSpec, getDetailSpec } from '../../../service/spec'
 import { toast } from 'react-toastify'
 import { confirmAlert } from 'react-confirm-alert'
 import ReactLoading from 'react-loading'
 import { IoArrowBackCircle } from 'react-icons/io5'
-import Protected from '../../components/Auth/Protected'
+import Protected from '../../../components/Auth/Protected'
 
 export const Route = createLazyFileRoute('/admin/specs/$id')({
   component: () => (
@@ -83,7 +83,7 @@ function SpecDetail() {
           onClick: async () => {
             const result = await deleteSpec(id)
             if (result?.success) {
-              navigate({ to: '/specs' })
+              navigate({ to: '/admin/specs' })
               return
             }
 
@@ -99,7 +99,7 @@ function SpecDetail() {
   }
 
   function onClickBack() {
-    navigate({ to: '/specs' })
+    navigate({ to: '/admin/specs' })
   }
 
   return (

@@ -6,6 +6,7 @@ import { useSelector } from "react-redux";
 import { setToken, setUser } from "../../redux/slices/auth";
 import { profile } from "../../service/auth";
 import PropTypes from "prop-types";
+import { IoMdHome } from "react-icons/io";
 
 const SideNavigationBar = () => {
     const dispatch = useDispatch();
@@ -36,23 +37,28 @@ const SideNavigationBar = () => {
             className="d-flex flex-column flex-shrink-0 bg-light overflow-y-hidden"
             style={{ width: "4.5rem", height: "90vh" }}
         >
-            <Link
-                to="/"
-                className="d-block p-3 link-dark text-decoration-none"
-                title="Icon-only"
-            >
-                <img
-                    src="/assets/images/logo.png"
-                    alt=""
-                    width="40"
-                    height="32"
-                />
-                <span className="visually-hidden">Icon-only</span>
-            </Link>
             <ul className="nav nav-pills nav-flush flex-column mb-auto text-center">
                 <li>
                     <Link
-                        to="/cars"
+                        to="/"
+                        className="nav-link py-3 border-bottom"
+                        title="Icon-only"
+                    >
+                        <IoMdHome
+                            className=""
+                            style={{ width: "25px", height: "25px" }}
+                        />
+                        <span
+                            className="fw-bold"
+                            style={{ fontSize: "0.7rem" }}
+                        >
+                            Home
+                        </span>
+                    </Link>
+                </li>
+                <li>
+                    <Link
+                        to="/admin/cars"
                         className="nav-link py-3 border-bottom"
                         title="Car"
                     >
@@ -66,7 +72,7 @@ const SideNavigationBar = () => {
                 </li>
                 <li>
                     <Link
-                        to="/manufactures"
+                        to="/admin/manufactures"
                         className="nav-link py-3 border-bottom"
                         title="Manufacture"
                     >
@@ -80,7 +86,7 @@ const SideNavigationBar = () => {
                 </li>
                 <li>
                     <Link
-                        to="/specs"
+                        to="/admin/specs"
                         className="nav-link py-3 border-bottom"
                         title="Spec"
                     >
@@ -94,7 +100,7 @@ const SideNavigationBar = () => {
                 </li>
                 <li>
                     <Link
-                        to="/options"
+                        to="/admin/options"
                         className="nav-link py-3 border-bottom"
                         title="Option"
                     >

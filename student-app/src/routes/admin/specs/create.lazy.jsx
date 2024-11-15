@@ -5,10 +5,10 @@ import Col from 'react-bootstrap/Col'
 import Card from 'react-bootstrap/Card'
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
-import { createSpec } from '../../service/spec'
+import { createSpec } from '../../../service/spec'
 import { IoArrowBackCircle } from 'react-icons/io5'
 import { toast } from 'react-toastify'
-import Protected from '../../components/Auth/Protected'
+import Protected from '../../../components/Auth/Protected'
 
 export const Route = createLazyFileRoute('/admin/specs/create')({
   component: () => (
@@ -29,14 +29,14 @@ function CreateSpec() {
     const result = await createSpec(request)
     if (result?.success) {
       toast.success('Spec created successfully!')
-      navigate({ to: '/specs' })
+      navigate({ to: '/admin/specs' })
     } else {
       toast.error(result?.message)
     }
   }
 
   function onClickBack() {
-    navigate({ to: '/specs' })
+    navigate({ to: '/admin/specs' })
   }
 
   return (

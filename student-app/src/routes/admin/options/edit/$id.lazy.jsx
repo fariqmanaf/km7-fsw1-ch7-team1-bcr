@@ -5,10 +5,10 @@ import Col from 'react-bootstrap/Col'
 import Card from 'react-bootstrap/Card'
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
-import { getDetailOption, updateOption } from '../../../service/options'
+import { getDetailOption, updateOption } from '../../../../service/options'
 import { toast } from 'react-toastify'
 import { IoArrowBackCircle } from 'react-icons/io5'
-import Protected from '../../../components/Auth/Protected'
+import Protected from '../../../../components/Auth/Protected'
 
 export const Route = createLazyFileRoute('/admin/options/edit/$id')({
   component: () => (
@@ -41,7 +41,7 @@ function EditOption() {
   }, [id])
 
   if (isNotFound) {
-    navigate({ to: '/options' })
+    navigate({ to: '/admin/options' })
     return
   }
 
@@ -52,14 +52,14 @@ function EditOption() {
     const result = await updateOption(id, request)
     if (result?.success) {
       toast.success('Option updated successfully!')
-      navigate({ to: '/options' })
+      navigate({ to: '/admin/options' })
     } else {
       toast.error(result?.message)
     }
   }
 
   function onClickBack() {
-    navigate({ to: '/specs' })
+    navigate({ to: '/admin/options' })
   }
 
   return (

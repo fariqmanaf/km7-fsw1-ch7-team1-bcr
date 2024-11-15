@@ -5,8 +5,8 @@ import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Table from 'react-bootstrap/Table'
 import Button from 'react-bootstrap/Button'
-import { getSpecs } from '../../service/spec'
-import SpecItem from '../../components/Spec/SpecItem'
+import { getSpecs } from '../../../service/spec'
+import SpecItem from '../../../components/Spec/SpecItem'
 import ReactLoading from 'react-loading'
 
 export const Route = createLazyFileRoute('/admin/specs/')({
@@ -72,7 +72,7 @@ function Spec() {
           {user?.role_id === 1 && (
             <Button
               as={Link}
-              href={`/specs/create`}
+              href={`/admin/specs/create`}
               style={{
                 transition: 'all 0.3s',
                 backgroundColor: '#0d6efd',
