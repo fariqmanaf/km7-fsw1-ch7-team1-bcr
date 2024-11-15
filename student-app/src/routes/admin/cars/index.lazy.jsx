@@ -355,7 +355,7 @@ function Cars() {
                                                 )}
                                                 <Button
                                                     as={Link}
-                                                    href={`/cars/${car.id}`}
+                                                    href={`/admin/cars/${car.id}`}
                                                     className="text-white fw-semibold d-flex justify-content-center align-content-center"
                                                     style={{
                                                         height: "2.5rem",

@@ -5,10 +5,10 @@ import Col from 'react-bootstrap/Col'
 import Card from 'react-bootstrap/Card'
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
-import { createManufacture } from '../../service/manufactures'
+import { createManufacture } from '../../../service/manufactures'
 import { IoArrowBackCircle } from 'react-icons/io5'
 import { toast } from 'react-toastify'
-import Protected from '../../components/Auth/Protected'
+import Protected from '../../../components/Auth/Protected'
 
 export const Route = createLazyFileRoute('/admin/manufactures/create')({
   component: () => (
@@ -29,14 +29,14 @@ function CreateManufacture() {
     const result = await createManufacture(request)
     if (result?.success) {
       toast.success('Manufacture created successfully!')
-      navigate({ to: '/manufactures' })
+      navigate({ to: '/admin/manufactures' })
     } else {
       toast.error(result?.message)
     }
   }
 
   function onClickBack() {
-    navigate({ to: '/specs' })
+    navigate({ to: '/admin/manufactures' })
   }
 
   return (

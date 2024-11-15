@@ -8,10 +8,10 @@ import Button from 'react-bootstrap/Button'
 import {
   getDetailManufacture,
   updateManufacture,
-} from '../../../service/manufactures'
+} from '../../../../service/manufactures'
 import { toast } from 'react-toastify'
 import { IoArrowBackCircle } from 'react-icons/io5'
-import Protected from '../../../components/Auth/Protected'
+import Protected from '../../../../components/Auth/Protected'
 
 export const Route = createLazyFileRoute('/admin/manufactures/edit/$id')({
   component: () => (
@@ -44,7 +44,7 @@ function EditManufacture() {
   }, [id])
 
   if (isNotFound) {
-    navigate({ to: '/manufactures' })
+    navigate({ to: '/admin/manufactures' })
     return
   }
 
@@ -55,14 +55,14 @@ function EditManufacture() {
     const result = await updateManufacture(id, request)
     if (result?.success) {
       toast.success('Manufacture updated successfully!')
-      navigate({ to: '/manufactures' })
+      navigate({ to: '/admin/manufactures' })
     } else {
       toast.error(result?.message)
     }
   }
 
   function onClickBack() {
-    navigate({ to: '/specs' })
+    navigate({ to: '/admin/manufactures' })
   }
 
   return (

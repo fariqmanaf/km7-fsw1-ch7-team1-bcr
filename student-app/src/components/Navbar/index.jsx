@@ -28,14 +28,14 @@ const NavigationBar = () => {
             dispatch(setUser(null));
             dispatch(setToken(null));
 
-            navigate({ to: "/login" });
+            navigate({ to: "/" });
         };
 
         if (token) {
             getProfile();
         }
         if (!token) {
-            navigate({ to: "/login" });
+            navigate({ to: "/" });
         }
     }, [dispatch, navigate, token]);
 
@@ -45,7 +45,7 @@ const NavigationBar = () => {
         dispatch(setUser(null));
         dispatch(setToken(null));
 
-        navigate({ to: "/login" });
+        navigate({ to: "/" });
     };
 
     return (
@@ -110,12 +110,12 @@ const NavigationBar = () => {
                             </>
                         ) : (
                             <>
-                                {/* <Nav.Link as={Link} to="/login">
-                  Login
-                </Nav.Link>
-                <Nav.Link as={Link} to="/register">
-                  Register
-                </Nav.Link> */}
+                                <Nav.Link as={Link} to="/login">
+                                    Login
+                                </Nav.Link>
+                                <Nav.Link as={Link} to="/register">
+                                    Register
+                                </Nav.Link>
                             </>
                         )}
                     </Nav>

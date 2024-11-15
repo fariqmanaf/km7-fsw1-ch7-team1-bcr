@@ -4,12 +4,12 @@ import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Card from 'react-bootstrap/Card'
 import Button from 'react-bootstrap/Button'
-import { deleteoption, getDetailOption } from '../../service/options'
+import { deleteoption, getDetailOption } from '../../../service/options'
 import { toast } from 'react-toastify'
 import { confirmAlert } from 'react-confirm-alert'
 import ReactLoading from 'react-loading'
 import { IoArrowBackCircle } from 'react-icons/io5'
-import Protected from '../../components/Auth/Protected'
+import Protected from '../../../components/Auth/Protected'
 
 export const Route = createLazyFileRoute('/admin/options/$id')({
   component: () => (
@@ -83,7 +83,7 @@ function OptionDetail() {
           onClick: async () => {
             const result = await deleteoption(id)
             if (result?.success) {
-              navigate({ to: '/options' })
+              navigate({ to: '/admin/options' })
               return
             }
 
@@ -99,7 +99,7 @@ function OptionDetail() {
   }
 
   function onClickBack() {
-    navigate({ to: '/specs' })
+    navigate({ to: '/admin/options' })
   }
 
   return (

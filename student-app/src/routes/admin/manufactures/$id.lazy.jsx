@@ -7,12 +7,12 @@ import Button from 'react-bootstrap/Button'
 import {
   deleteManufacture,
   getDetailManufacture,
-} from '../../service/manufactures'
+} from '../../../service/manufactures'
 import { toast } from 'react-toastify'
 import { confirmAlert } from 'react-confirm-alert'
 import ReactLoading from 'react-loading'
 import { IoArrowBackCircle } from 'react-icons/io5'
-import Protected from '../../components/Auth/Protected'
+import Protected from '../../../components/Auth/Protected'
 
 export const Route = createLazyFileRoute('/admin/manufactures/$id')({
   component: () => (
@@ -86,7 +86,7 @@ function ManufactureDetail() {
           onClick: async () => {
             const result = await deleteManufacture(id)
             if (result?.success) {
-              navigate({ to: '/manufactures' })
+              navigate({ to: '/admin/manufactures' })
               return
             }
 
@@ -102,7 +102,7 @@ function ManufactureDetail() {
   }
 
   function onClickBack() {
-    navigate({ to: '/specs' })
+    navigate({ to: '/admin/manufactures' })
   }
 
   return (
