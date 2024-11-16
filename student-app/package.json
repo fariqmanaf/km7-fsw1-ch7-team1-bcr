@@ -10,8 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@radix-ui/themes": "^3.1.5",
+    "@fortawesome/fontawesome-free": "^6.6.0",
     "@gsap/react": "^2.1.1",
+    "@radix-ui/themes": "^3.1.5",
     "@reduxjs/toolkit": "^2.3.0",
     "@tanstack/react-router": "^1.76.1",
     "bootstrap": "^5.3.3",

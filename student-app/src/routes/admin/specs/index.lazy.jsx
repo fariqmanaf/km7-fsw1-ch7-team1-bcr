@@ -8,6 +8,8 @@ import Button from 'react-bootstrap/Button'
 import { getSpecs } from '../../../service/spec'
 import SpecItem from '../../../components/Spec/SpecItem'
 import ReactLoading from 'react-loading'
+import NavigationBar from "../../../components/Navbar";
+import SideNavigationBar from "../../../components/SideNav";
 
 export const Route = createLazyFileRoute('/admin/specs/')({
   component: Spec,
@@ -63,62 +65,69 @@ function Spec() {
   }
 
   return (
-    <Row className="d-flex justify-content-between px-5 my-2 mt-4">
-      <Row>
-        <Col className="d-flex justify-content-between px-5 mb-4">
-          <Row>
-            <h3>List Specs</h3>
-          </Row>
-          {user?.role_id === 1 && (
-            <Button
-              as={Link}
-              href={`/admin/specs/create`}
-              style={{
-                transition: 'all 0.3s',
-                backgroundColor: '#0d6efd',
-              }}
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.backgroundColor = 'transparent')(
-                  (e.currentTarget.style.color = '#0d6efd'),
-                )
-              }
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.backgroundColor = '#0d6efd')(
-                  (e.currentTarget.style.color = 'white'),
-                )
-              }
-            >
-              + Add Specs
-            </Button>
-          )}
-        </Col>
+    <>
+      <div>
+        <NavigationBar />
+        <SideNavigationBar />
+      </div>
+
+      <Row className="d-flex justify-content-between px-5 my-2 mt-4">
+        <Row>
+          <Col className="d-flex justify-content-between px-5 mb-4">
+            <Row>
+              <h3>List Specs</h3>
+            </Row>
+            {user?.role_id === 1 && (
+              <Button
+                as={Link}
+                href={`/admin/specs/create`}
+                style={{
+                  transition: "all 0.3s",
+                  backgroundColor: "#0d6efd",
+                }}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.backgroundColor = "transparent")(
+                    (e.currentTarget.style.color = "#0d6efd")
+                  )
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.backgroundColor = "#0d6efd")(
+                    (e.currentTarget.style.color = "white")
+                  )
+                }
+              >
+                + Add Specs
+              </Button>
+            )}
+          </Col>
+        </Row>
+        {specs.length === 0 ? (
+          <h1>Spec data is not found!</h1>
+        ) : (
+          <Table striped bordered hover>
+            <thead>
+              <tr>
+                <th style={{ textAlign: "center", width: "8%" }}>Id Spec</th>
+                <th style={{ textAlign: "center", width: "72%" }}>Spec</th>
+                {user && user?.role_id === 1 && (
+                  <th style={{ textAlign: "center", width: "20%" }}>
+                    <h6>
+                      <b>Options</b>
+                    </h6>
+                  </th>
+                )}
+              </tr>
+            </thead>
+            <tbody>
+              {specs.map((spec) => (
+                <SpecItem user={user} spec={spec} key={spec?.id} />
+              ))}
+            </tbody>
+          </Table>
+        )}
       </Row>
-      {specs.length === 0 ? (
-        <h1>Spec data is not found!</h1>
-      ) : (
-        <Table striped bordered hover>
-          <thead>
-            <tr>
-              <th style={{ textAlign: 'center', width: '8%' }}>Id Spec</th>
-              <th style={{ textAlign: 'center', width: '72%' }}>Spec</th>
-              {user && user?.role_id === 1 && (
-                <th style={{ textAlign: 'center', width: '20%' }}>
-                  <h6>
-                    <b>Options</b>
-                  </h6>
-                </th>
-              )}
-            </tr>
-          </thead>
-          <tbody>
-            {specs.map((spec) => (
-              <SpecItem user={user} spec={spec} key={spec?.id} />
-            ))}
-          </tbody>
-        </Table>
-      )}
-    </Row>
-  )
+    </>
+  );
 }
 
 export default Spec

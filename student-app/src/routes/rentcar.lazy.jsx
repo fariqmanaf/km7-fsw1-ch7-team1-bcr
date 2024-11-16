@@ -1,15 +1,17 @@
-import { createLazyFileRoute } from '@tanstack/react-router'
-import UserNavbar from '../../components/UserNavbar/UserNavbar'
-import 'bootstrap/dist/css/bootstrap.min.css'
-import '@fortawesome/fontawesome-free/css/all.min.css'
-import Col from 'react-bootstrap/Col'
-import Row from 'react-bootstrap/Row'
 
-export const Route = createLazyFileRoute('/cars/')({
-  component: SearchCars,
-})
+import { createLazyFileRoute } from "@tanstack/react-router";
+import UserNavbar from "../components/UserNavbar/UserNavbar";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "@fortawesome/fontawesome-free/css/all.min.css";
+import Col from "react-bootstrap/Col";
+import Row from "react-bootstrap/Row";
 
-function SearchCars() {
+export const Route = createLazyFileRoute("/rentcar")({
+  component: RentCar,
+});
+
+function RentCar() {
+
   return (
     <>
       <div>
@@ -18,14 +20,14 @@ function SearchCars() {
       <div id="mainsection" className="container">
         <div className="row">
           <div className="col-md-6 d-flex flex-column justify-content-center">
-            <h1 style={{ marginTop: '8px', marginBottom: '8px' }}>
+            <h1 style={{ marginTop: "8px", marginBottom: "8px" }}>
               Sewa & Rental Mobil Terbaik di kawasan (Lokasimu)
             </h1>
             <p
               style={{
-                marginTop: '8px',
-                marginBottom: '8px',
-                textAlign: 'justify',
+                marginTop: "8px",
+                marginBottom: "8px",
+                textAlign: "justify",
               }}
             >
               Selamat datang di Binar Car Rental. Kami menyediakan mobil
@@ -38,17 +40,17 @@ function SearchCars() {
               src="/assets/images/img_car.png"
               className="img-fluid"
               alt="Mercedes"
-              style={{ marginTop: '16px' }}
+              style={{ marginTop: "16px" }}
             />
           </div>
         </div>
       </div>
-      <div
+      <div 
         className=" container card mx-auto shadow py-3 floating-form"
         style={{
-          marginTop: '-30px',
-          marginBottom: '-30px',
-          position: 'relative',
+          marginTop: "-30px",
+          marginBottom: "-30px",
+          position: "relative",
           zIndex: 10,
         }}
       >
@@ -155,28 +157,28 @@ function SearchCars() {
               <a
                 className="nav-link text-black"
                 href="#ourservices"
-                style={{ marginBottom: '16px' }}
+                style={{ marginBottom: "16px" }}
               >
                 Our Services
               </a>
               <a
                 className="nav-link text-black"
                 href="#whyus"
-                style={{ marginBottom: '16px' }}
+                style={{ marginBottom: "16px" }}
               >
                 Why Us
               </a>
               <a
                 className="nav-link text-black"
                 href="#testimonial"
-                style={{ marginBottom: '16px' }}
+                style={{ marginBottom: "16px" }}
               >
                 Testimonial
               </a>
               <a
                 className="nav-link text-black"
                 href="#faq"
-                style={{ marginBottom: '16px' }}
+                style={{ marginBottom: "16px" }}
               >
                 FAQ
               </a>
@@ -189,7 +191,7 @@ function SearchCars() {
                 src="/assets/images/list item.png"
                 alt="sosmed"
                 className="img-fluid w-75 w-lg-100"
-                style={{ marginBottom: '16px' }}
+                style={{ marginBottom: "16px" }}
               />
             </div>
 
@@ -206,5 +208,5 @@ function SearchCars() {
         </div>
       </div>
     </>
-  )
+  );
 }

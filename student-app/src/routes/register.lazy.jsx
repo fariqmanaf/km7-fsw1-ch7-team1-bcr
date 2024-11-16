@@ -1,7 +1,6 @@
 import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
-import Card from "react-bootstrap/Card";
 import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
@@ -59,17 +58,46 @@ function Register() {
   };
 
   return (
-    <Row className="mt-5">
-      <Col className="offset-md-3">
-        <Card>
-          <Card.Header className="text-center">Register</Card.Header>
-          <Card.Body>
-            <Form onSubmit={onSubmit}>
-              <Form.Group as={Row} className="mb-3" controlId="name">
-                <Form.Label column sm="3">
-                  Name
-                </Form.Label>
-                <Col sm="9">
+    <>
+      <Row className="vh-100 m-0">
+        <Col
+          md={7}
+          className="d-flex align-items-center justify-content-center p-0"
+        >
+          <img
+            src="/assets/images/image2.png"
+            alt="Pict"
+            style={{
+              width: "100%",
+              height: "100vh", // Full viewport height
+              objectFit: "cover",
+              margin: 0,
+              padding: 0,
+            }}
+          />
+        </Col>
+        <Col
+          md={5}
+          className="d-flex align-items-center justify-content-center"
+        >
+          <Row >
+            <div className="login-page">
+              <div>
+                <img
+                  src="/assets/images/logo.png"
+                  alt=""
+                  width="90"
+                  height="32"
+                />
+                <h3>
+                  <b>Welcome, Admin BCR</b>
+                </h3>
+              </div>
+              <Form onSubmit={onSubmit}>
+                <Form.Group as={Row} className="mb-3" controlId="name">
+                  <Form.Label column sm={3}>
+                    Name
+                  </Form.Label>
                   <Form.Control
                     type="text"
                     placeholder="Name"
@@ -79,14 +107,12 @@ function Register() {
                       setName(event.target.value);
                     }}
                   />
-                </Col>
-              </Form.Group>
+                </Form.Group>
 
-              <Form.Group as={Row} className="mb-3" controlId="email">
-                <Form.Label column sm={3}>
-                  Email
-                </Form.Label>
-                <Col sm={9}>
+                <Form.Group as={Row} className="mb-3" controlId="email">
+                  <Form.Label column sm={3}>
+                    Email
+                  </Form.Label>
                   <Form.Control
                     type="email"
                     placeholder="Email"
@@ -96,14 +122,12 @@ function Register() {
                       setEmail(event.target.value);
                     }}
                   />
-                </Col>
-              </Form.Group>
+                </Form.Group>
 
-              <Form.Group as={Row} className="mb-3" controlId="password">
-                <Form.Label column sm={3}>
-                  Password
-                </Form.Label>
-                <Col sm={9}>
+                <Form.Group as={Row} className="mb-3" controlId="password">
+                  <Form.Label column sm={3}>
+                    Password
+                  </Form.Label>
                   <Form.Control
                     type="password"
                     placeholder="Password"
@@ -113,14 +137,16 @@ function Register() {
                       setPassword(event.target.value);
                     }}
                   />
-                </Col>
-              </Form.Group>
+                </Form.Group>
 
-              <Form.Group as={Row} className="mb-3" controlId="confirmPassword">
-                <Form.Label column sm={3}>
-                  Confirm Password
-                </Form.Label>
-                <Col sm={9}>
+                <Form.Group
+                  as={Row}
+                  className="mb-3"
+                  controlId="confirmPassword"
+                >
+                  <Form.Label column sm={3}>
+                    Confirm Password
+                  </Form.Label>
                   <Form.Control
                     type="password"
                     placeholder="Confirm Password"
@@ -130,14 +156,16 @@ function Register() {
                       setConfirmPassword(event.target.value);
                     }}
                   />
-                </Col>
-              </Form.Group>
+                </Form.Group>
 
-              <Form.Group as={Row} className="mb-3" controlId="profilePicture">
-                <Form.Label column sm={3}>
-                  Profile Picture
-                </Form.Label>
-                <Col sm={9}>
+                <Form.Group
+                  as={Row}
+                  className="mb-3"
+                  controlId="profilePicture"
+                >
+                  <Form.Label column sm={3}>
+                    Profile Picture
+                  </Form.Label>
                   <Form.Control
                     type="file"
                     placeholder="Choose File"
@@ -147,18 +175,17 @@ function Register() {
                     }}
                     accept=".jpg,.png"
                   />
-                </Col>
-              </Form.Group>
-              <div className="d-grid gap-2">
-                <Button type="submit" variant="primary">
-                  Register
-                </Button>
-              </div>
-            </Form>
-          </Card.Body>
-        </Card>
-      </Col>
-      <Col md={3}></Col>
-    </Row>
+                </Form.Group>
+                <div className="d-grid gap-2">
+                  <Button type="submit" variant="primary">
+                    Register
+                  </Button>
+                </div>
+              </Form>
+            </div>
+          </Row>
+        </Col>
+      </Row>
+    </>
   );
 }
