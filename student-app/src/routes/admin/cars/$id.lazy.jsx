@@ -19,6 +19,8 @@ import { getManufactures } from "../../../service/manufactures";
 import { setSuccess } from "../../../redux/slices/success";
 import SideNavigationBar from "../../../components/SideNav";
 import Protected from "../../../components/Auth/Protected";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { toast } from "react-toastify";
 
 export const Route = createLazyFileRoute("/admin/cars/$id")({
     component: () => (
@@ -50,7 +52,6 @@ function DetailsCar() {
         (state) => state.car_details.availability
     );
 
-    const [isLoading, setIsLoading] = useState(false);
     const [manufactures, setManufactures] = useState([]);
     const [currentManufacture, setCurrentManufacture] = useState(
         previousDetails === null ? "" : previousDetails.manufacture_name
@@ -64,86 +65,98 @@ function DetailsCar() {
     );
     const [imageURL, setImageURL] = useState("");
 
-    useEffect(() => {
-        const getManufactureData = async () => {
-            const result = await getManufactures();
-            if (result.success) {
-                setManufactures(result.data);
-            }
-        };
-        if (token) {
-            getManufactureData();
-        }
-    }, [token]);
+    const {
+        data: manufacturesData,
+        isSuccess: isManufacturesSuccess,
+        isError: isManufacturesError,
+    } = useQuery({
+        queryKey: ["manufactures"],
+        queryFn: async () => await getManufactures(),
+        enabled: !!token,
+    });
 
-    useEffect(() => {
-        const getDetailCarData = async (id) => {
-            setIsLoading(true);
-            const result = await getDetailCar(id);
-            if (result?.success) {
-                {
-                    previousAvailability === null &&
-                        setAvailability({
-                            id: result.data?.availability?.id,
-                            available: result.data?.availability?.available,
-                            rent_perday: result.data?.availability?.rent_perday,
-                            available_at:
-                                result.data?.availability?.available_at,
-                        });
-                }
-                {
-                    previousDetails === null &&
-                        setCarDetails({
-                            id: result.data?.car_details[0]?.id,
-                            transmission:
-                                result.data?.car_details[0]?.transmission,
-                            capacity: result.data?.car_details[0]?.capacity,
-                            description:
-                                result.data?.car_details[0]?.description,
-                            image: result.data?.car_details[0]?.image,
-                            plate: result.data?.car_details[0]?.plate,
-                            year: result.data?.car_details[0]?.year,
-                            cars_id: result.data?.car_details[0]?.cars_id,
-                            manufacture_id: result.data?.manufactures?.id,
-                            manufacture_name: result.data?.manufactures?.name,
-                        });
-                }
-                {
-                    previousDetails === null &&
-                        setCurrentManufacture(result.data?.manufactures?.name);
-                }
-                setImageURL(result.data?.car_details[0]?.image);
-                setIsNotFound(false);
-            } else {
-                setIsNotFound(true);
-            }
-            setIsLoading(false);
-        };
-
-        if (id) {
-            getDetailCarData(id);
-        }
-    }, [id]);
+    const {
+        data: carsData,
+        isSuccess,
+        isError,
+        isPending,
+    } = useQuery({
+        queryKey: ["cars", id],
+        queryFn: () => getDetailCar(id),
+        enabled: !!token,
+    });
 
     useLayoutEffect(() => {
-        gsap.from(containerRef.current, {
-            opacity: 0,
-            duration: 1,
-            ease: "power3.inOut",
-        });
-        gsap.from(imageRef.current, {
-            opacity: 0,
-            y: 50,
-            duration: 1,
-            ease: "power3.inOut",
-        });
-        gsap.from(formRef.current, {
-            opacity: 0,
-            y: 50,
-            duration: 1,
-            ease: "power3.inOut",
-        });
-    }, [isLoading]);
+        gsap.context(() => {
+            gsap.set(containerRef.current, { opacity: 0 });
+            gsap.set(imageRef.current, { opacity: 0, y: 50 });
+            gsap.set(formRef.current, { opacity: 0, y: 50 });
+
+            gsap.to(containerRef.current, {
+                duration: 1,
+                opacity: 1,
+                ease: "power3.inOut",
+            });
+            gsap.to(imageRef.current, {
+                duration: 1,
+                opacity: 1,
+                y: 0,
+                ease: "power3.inOut",
+            });
+            gsap.to(formRef.current, {
+                duration: 1,
+                opacity: 1,
+                y: 0,
+                ease: "power3.inOut",
+            });
+        }, containerRef);
+    }, [isPending]);
+
+    useEffect(() => {
+        if (isManufacturesSuccess) {
+            setManufactures(manufacturesData.data);
+        }
+        if (isManufacturesError) {
+            toast.error("Failed to get manufactures data!");
+        }
+    }, [manufacturesData, isManufacturesSuccess]);
+
+    useEffect(() => {
+        if (isSuccess) {
+            {
+                previousAvailability === null &&
+                    setAvailability({
+                        id: carsData.data?.availability?.id,
+                        available: carsData.data?.availability?.available,
+                        rent_perday: carsData.data?.availability?.rent_perday,
+                        available_at: carsData.data?.availability?.available_at,
+                    });
+            }
+            {
+                previousDetails === null &&
+                    setCarDetails({
+                        id: carsData.data?.car_details[0]?.id,
+                        transmission:
+                            carsData.data?.car_details[0]?.transmission,
+                        capacity: carsData.data?.car_details[0]?.capacity,
+                        description: carsData.data?.car_details[0]?.description,
+                        image: carsData.data?.car_details[0]?.image,
+                        plate: carsData.data?.car_details[0]?.plate,
+                        year: carsData.data?.car_details[0]?.year,
+                        cars_id: carsData.data?.car_details[0]?.cars_id,
+                        manufacture_id: carsData.data?.manufactures?.id,
+                        manufacture_name: carsData.data?.manufactures?.name,
+                    });
+                setCurrentManufacture(carsData.data?.manufactures?.name);
+            }
+            setImageURL(carsData.data?.car_details[0]?.image);
+            setIsNotFound(false);
+        }
+
+        if (isError) {
+            setIsNotFound(true);
+        }
+    }, [carsData, isSuccess, isError]);
 
     if (success) {
         dispatch(setSuccess(false));
@@ -164,7 +177,7 @@ function DetailsCar() {
         );
     }
 
-    if (isLoading) {
+    if (isPending) {
         return (
             <div
                 style={{ height: "90vh" }}
@@ -195,12 +208,9 @@ function DetailsCar() {
 
     function onClickForm(e) {
         e.preventDefault();
-
         dispatch(setDetailsCar(carDetails));
         dispatch(setAvailabilityState(availability));
-
         localStorage.setItem("carId", id);
-
         navigate({ to: `/admin/cars/next-form` });
     }
 
@@ -351,7 +361,11 @@ function DetailsCar() {
                                 <Form.Control
                                     type="number"
                                     disabled={user?.role_id === 2}
-                                    defaultValue={carDetails.capacity || 0}
+                                    defaultValue={
+                                        carDetails.capacity
+                                            ? carDetails.capacity
+                                            : ""
+                                    }
                                     onChange={(event) =>
                                         setCarDetails({
                                             ...carDetails,
@@ -366,7 +380,7 @@ function DetailsCar() {
                                     type="text"
                                     disabled={user?.role_id === 2}
                                     defaultValue={
-                                        carDetails.plate || "Your Plate"
+                                        carDetails.plate ? carDetails.plate : ""
                                     }
                                     onChange={(event) =>
                                         setCarDetails({

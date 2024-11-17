@@ -7,31 +7,9 @@ import { setToken, setUser } from "../../redux/slices/auth";
 import { profile } from "../../service/auth";
 import PropTypes from "prop-types";
 import { IoMdHome } from "react-icons/io";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 const SideNavigationBar = () => {
-    const dispatch = useDispatch();
-    const navigate = useNavigate();
-
-    const { token } = useSelector((state) => state.auth);
-
-    useEffect(() => {
-        const getProfile = async () => {
-            const result = await profile();
-            if (result.success) {
-                dispatch(setUser(result.data));
-                return;
-            }
-
-            dispatch(setUser(null));
-            dispatch(setToken(null));
-            navigate({ to: "/login" });
-        };
-
-        if (token) {
-            getProfile();
-        }
-    }, [dispatch, navigate, token]);
-
     return (
         // <div
         //     className="d-flex flex-column flex-shrink-0 bg-light overflow-y-hidden"

@@ -10,6 +10,7 @@ import { profile } from "../../service/auth";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import { Dropdown } from "react-bootstrap";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 const NavigationBar = () => {
     const dispatch = useDispatch();
@@ -17,27 +18,30 @@ const NavigationBar = () => {
 
     const { user, token } = useSelector((state) => state.auth);
 
+    const {
+        data: profileData,
+        isSuccess,
+        isError,
+    } = useQuery({
+        queryKey: ["profile"],
+        queryFn: () => profile(),
+        enabled: !!token,
+    });
+
     useEffect(() => {
-        const getProfile = async () => {
-            const result = await profile();
-            if (result.success) {
-                dispatch(setUser(result.data));
-                return;
-            }
-
-            dispatch(setUser(null));
-            dispatch(setToken(null));
-
-            navigate({ to: "/" });
-        };
-
-        if (token) {
-            getProfile();
-        }
         if (!token) {
             navigate({ to: "/" });
         }
-    }, [dispatch, navigate, token]);
+        if (isSuccess) {
+            dispatch(setUser(profileData.data));
+            return;
+        }
+        if (isError) {
+            dispatch(setUser(null));
+            dispatch(setToken(null));
+            navigate({ to: "/" });
+        }
+    }, [profileData]);
 
     const logout = (event) => {
         event.preventDefault();

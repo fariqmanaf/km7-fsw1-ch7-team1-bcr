@@ -24,6 +24,7 @@ import {
 } from "../../../redux/slices/car_details";
 import { setSuccess } from "../../../redux/slices/success";
 import Protected from "../../../components/Auth/Protected";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 export const Route = createLazyFileRoute("/admin/cars/next-create")({
     component: () => (
@@ -46,7 +47,6 @@ function NextCreateComponent() {
     const dispatch = useDispatch();
 
     const token = localStorage.getItem("token");
-    const id = localStorage.getItem("carId");
 
     const carDetailsState = useSelector(
         (state) => state.car_details.carDetails
@@ -59,7 +59,6 @@ function NextCreateComponent() {
     const specsState = useSelector((state) => state.car_details.specs);
 
     const [file, setFile] = useState(null);
-    const [isLoading, setIsLoading] = useState(false);
     const [imageURL, setImageURL] = useState(
         carDetailsState?.url_image || null
     );
@@ -69,59 +68,96 @@ function NextCreateComponent() {
     const [selectedOptions, setSelectedOptions] = useState(optionsState || []);
     const [formSpecs, setFormSpecs] = useState([]);
     const [selectedSpecs, setSelectedSpecs] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
     const maxSelection = 3;
 
+    const {
+        data: optionsData,
+        isSuccess: isOptionSuccess,
+        isError: isOptionError,
+    } = useQuery({
+        queryKey: ["options"],
+        queryFn: () => getOptions(),
+    });
+
+    const {
+        data: specsData,
+        isSuccess: isSpecSuccess,
+        isError: isSpecError,
+    } = useQuery({
+        queryKey: ["specs"],
+        queryFn: () => getSpecs(),
+    });
+
+    const { mutate: createCarMutation } = useMutation({
+        mutationFn: (formData) => createCar(formData),
+        onSuccess: (data) => {
+            if (data?.success === true) {
+                dispatch(setModelsState(null));
+                dispatch(setOptionsState(null));
+                dispatch(setSpecsState(null));
+                dispatch(setDetailsCar(null));
+                dispatch(setAvailabilityState(null));
+                toast.success("Your Car Data Has Been Created!");
+                dispatch(setSuccess(true));
+            } else {
+                toast.error(data?.message);
+            }
+        },
+        onError: (error) => {
+            toast.error(error?.message);
+        },
+        onMutate: () => {
+            setIsLoading(true);
+        },
+        onSettled: () => {
+            setIsLoading(false);
+        },
+    });
+
+    useEffect(() => {
+        if (isOptionSuccess) {
+            setOptions(optionsData?.data);
+        }
+        if (isOptionError) {
+            toast.error("Failed to get options data!");
+        }
+    }, [optionsData, isOptionSuccess, isOptionError]);
+
+    useEffect(() => {
+        if (isSpecSuccess) {
+            setSpecs(specsData?.data);
+        }
+        if (isSpecError) {
+            toast.error("Failed to get specs data!");
+        }
+    }, [specsData, isSpecSuccess, isSpecError]);
+
     useLayoutEffect(() => {
-        gsap.from(containerRef.current, {
-            opacity: 0,
-            duration: 1,
-            ease: "power3.inOut",
-        });
-        gsap.from(imageRef.current, {
-            opacity: 0,
-            y: 50,
-            duration: 1,
-            ease: "power3.inOut",
-        });
-        gsap.from(formRef.current, {
-            opacity: 0,
-            y: 50,
-            duration: 1,
-            ease: "power3.inOut",
-        });
+        gsap.context(() => {
+            gsap.set(containerRef.current, { opacity: 0 });
+            gsap.set(imageRef.current, { opacity: 0, y: 50 });
+            gsap.set(formRef.current, { opacity: 0, y: 50 });
+
+            gsap.to(containerRef.current, {
+                duration: 1,
+                opacity: 1,
+                ease: "power3.inOut",
+            });
+            gsap.to(imageRef.current, {
+                duration: 1,
+                opacity: 1,
+                y: 0,
+                ease: "power3.inOut",
+            });
+            gsap.to(formRef.current, {
+                duration: 1,
+                opacity: 1,
+                y: 0,
+                ease: "power3.inOut",
+            });
+        }, containerRef);
     }, [isLoading]);
-
-    useEffect(() => {
-        const getOptionsData = async () => {
-            setIsLoading(true);
-            const result = await getOptions();
-            if (result?.success) {
-                setOptions(result.data);
-                setIsLoading(false);
-            } else {
-                toast.error(result.message);
-                setIsLoading(false);
-            }
-        };
-
-        getOptionsData();
-    }, [id]);
-
-    useEffect(() => {
-        const getSpecsData = async () => {
-            setIsLoading(true);
-            const result = await getSpecs();
-            if (result?.success) {
-                setSpecs(result.data);
-                setIsLoading(false);
-            } else {
-                toast.error(result.message);
-                setIsLoading(false);
-            }
-        };
-
-        getSpecsData();
-    }, [id]);
 
     useEffect(() => {
         setFormSpecs(
@@ -237,25 +273,7 @@ function NextCreateComponent() {
         formData.append("availableAt", availabilityState.available_at);
         formData.append("available", availabilityState.available);
 
-        const createCarData = async () => {
-            setIsLoading(true);
-            const result = await createCar(formData);
-            if (result?.success === true) {
-                setIsLoading(false);
-                dispatch(setModelsState(null));
-                dispatch(setOptionsState(null));
-                dispatch(setSpecsState(null));
-                dispatch(setDetailsCar(null));
-                dispatch(setAvailabilityState(null));
-                toast.success("Your Car Data Has Been Created!");
-                dispatch(setSuccess(true));
-            } else {
-                toast.error(result?.message);
-                setIsLoading(false);
-            }
-        };
-
-        createCarData();
+        createCarMutation(formData);
     };
 
     const handleChangeOptions = (selected) => {

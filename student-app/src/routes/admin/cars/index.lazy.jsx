@@ -11,7 +11,7 @@ import { IoCarSharp } from "react-icons/io5";
 import ReactLoading from "react-loading";
 import gsap from "gsap";
 import SideNavigationBar from "../../../components/SideNav";
-
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { setSuccess } from "../../../redux/slices/success";
 import { confirmAlert } from "react-confirm-alert";
 import "react-confirm-alert/src/react-confirm-alert.css";
@@ -48,8 +48,26 @@ function Cars() {
 
     const [cars, setCars] = useState([]);
     const [filteredCars, setFilteredCars] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
     const [selectedTransmission, setSelectedTransmission] = useState("all");
+
+    const {
+        data: carsData,
+        isPending,
+        isError,
+        isSuccess,
+    } = useQuery({
+        queryKey: ["cars"],
+        queryFn: getCars,
+        enabled: !!token,
+    });
+
+    useEffect(() => {
+        dispatch(setDetailsCar(null));
+        dispatch(setAvailabilityState(null));
+        dispatch(setModelsState(null));
+        dispatch(setOptionsState(null));
+        dispatch(setSpecsState(null));
+    }, [isPending]);
 
     useLayoutEffect(() => {
         gsap.context(() => {
@@ -62,31 +80,29 @@ function Cars() {
                 ease: "power2.out",
             });
         }, containerRef);
-    }, [isLoading]);
+    }, [isPending]);
 
     useEffect(() => {
-        dispatch(setDetailsCar(null));
-        dispatch(setAvailabilityState(null));
-        dispatch(setModelsState(null));
-        dispatch(setOptionsState(null));
-        dispatch(setSpecsState(null));
-    }, [isLoading]);
-
-    useEffect(() => {
-        const getCarsData = async () => {
-            setIsLoading(true);
-            const result = await getCars();
-            if (result.success) {
-                setCars(result.data);
-                setFilteredCars(result.data);
-            }
-            setIsLoading(false);
-        };
-
-        if (token) {
-            getCarsData();
+        if (isSuccess) {
+            setCars(carsData.data);
+            setFilteredCars(carsData.data);
         }
-    }, [token]);
+        if (isError) {
+            toast.error("Failed to get cars data");
+        }
+    }, [carsData, isSuccess]);
+
+    const { mutate: deletingCars } = useMutation({
+        mutationFn: (id) => deleteCar(id),
+        onSuccess: () => {
+            const newCars = cars.filter((car) => car.id !== id);
+            setCars(newCars);
+            setFilteredCars(newCars);
+        },
+        onError: (error) => {
+            toast.error(error?.message);
+        },
+    });
 
     useEffect(() => {
         if (selectedTransmission === "all") {
@@ -119,7 +135,7 @@ function Cars() {
         );
     }
 
-    if (isLoading) {
+    if (isPending) {
         return (
             <div
                 style={{ height: "90vh" }}
@@ -149,18 +165,7 @@ function Cars() {
                 {
                     label: "Yes",
                     onClick: async () => {
-                        setIsLoading(true);
-                        const result = await deleteCar(id);
-                        if (result.success) {
-                            const newCars = cars.filter((car) => car.id !== id);
-                            setCars(newCars);
-                            setFilteredCars(newCars);
-                            setIsLoading(false);
-                            toast.success("Car deleted successfully!");
-                            return;
-                        }
-
-                        toast.error("Failed to delete car!");
+                        deletingCars(id);
                     },
                 },
                 {
