@@ -37,16 +37,16 @@ const SideNavigationBar = () => {
         //     className="d-flex flex-column flex-shrink-0 bg-light overflow-y-hidden"
         //     style={{ width: "4.5rem", height: "90vh" }}
         // >
-            <div
+        <div
             className="d-flex flex-column bg-light overflow-y-hidden"
             style={{
-                position: "fixed", 
-                top: 0, 
-                left: 0, 
-                width: "4.5rem", 
-                height: "100vh", 
-                zIndex: 1000, 
-                boxShadow: "2px 0 5px rgba(0, 0, 0, 0.1)", 
+                position: "fixed",
+                top: 0,
+                left: 0,
+                width: "4.5rem",
+                height: "100vh",
+                zIndex: 1000,
+                boxShadow: "2px 0 5px rgba(0, 0, 0, 0.1)",
             }}
         >
             <ul className="nav nav-pills nav-flush flex-column mb-auto text-center">

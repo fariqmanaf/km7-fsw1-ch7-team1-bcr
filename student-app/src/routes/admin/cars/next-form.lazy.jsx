@@ -22,10 +22,15 @@ import {
     setOptionsState,
     setSpecsState,
 } from "../../../redux/slices/car_details";
-import success, { setSuccess } from "../../../redux/slices/success";
+import { setSuccess } from "../../../redux/slices/success";
+import Protected from "../../../components/Auth/Protected";
 
 export const Route = createLazyFileRoute("/admin/cars/next-form")({
-    component: NextForm,
+    component: () => (
+        <Protected roles={[1]}>
+            <NextForm />
+        </Protected>
+    ),
 });
 
 function NextForm() {

@@ -8,23 +8,23 @@ import "react-toastify/dist/ReactToastify.css";
 import "../app.css";
 
 export const Route = createRootRoute({
-  component: () => (
-    <>
-      {/* Navbar */}
-      <NavigationBar />
+    component: () => (
+        <>
+            {/* Navbar */}
+            <NavigationBar />
 
-      {/* Sidebar and Content Wrapper */}
-      <div style={{ display: "flex" }}>
-        {/* Main Content */}
-        <Container fluid style={{ flex: 1 }}>
-          <Outlet />
-        </Container>
-      </div>
+            {/* Sidebar and Content Wrapper */}
+            <div style={{ display: "flex" }}>
+                {/* Main Content */}
+                <Container fluid style={{ flex: 1 }}>
+                    <Outlet />
+                </Container>
+            </div>
 
-      <TanStackRouterDevtools />
+            <TanStackRouterDevtools />
 
-      {/* React Toastify */}
-      <ToastContainer theme="colored" />
-    </>
-  ),
+            {/* React Toastify */}
+            <ToastContainer theme="colored" />
+        </>
+    ),
 });
