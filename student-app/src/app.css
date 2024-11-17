@@ -74,4 +74,17 @@
 .react-confirm-alert-button-group button:last-child:hover {
   background-color: #b0b0b0;
 }
-/* CSS confirmAlert end */
+
+/* register button css */
+.register-button {
+  background-color: #28a745;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.register-button:hover {
+  background-color: #218838;
+  color: white;
+}
