@@ -14,6 +14,22 @@ export const getCars = async () => {
     return result;
 };
 
+export const getCarsByQueryParams = async (queryParams) => {
+    const token = localStorage.getItem("token");
+    let url = `${import.meta.env.VITE_API_URL}/cars?${queryParams}`;
+
+    const response = await fetch(url, {
+        headers: {
+            authorization: `Bearer ${token}`,
+        },
+        method: "GET",
+    });
+
+    // get data
+    const result = await response.json();
+    return result;
+};
+
 export const getDetailCar = async (id) => {
     const token = localStorage.getItem("token");
     let url = `${import.meta.env.VITE_API_URL}/cars/${id}`;
@@ -28,7 +44,7 @@ export const getDetailCar = async (id) => {
     // get data
     const result = await response.json();
     return result;
-}
+};
 
 export const updateCar = async (id, car) => {
     const token = localStorage.getItem("token");
@@ -44,9 +60,9 @@ export const updateCar = async (id, car) => {
 
     const result = await response.json();
     return result;
-}
+};
 
-export const createCar = async (car) => {  
+export const createCar = async (car) => {
     const token = localStorage.getItem("token");
     let url = `${import.meta.env.VITE_API_URL}/cars`;
 
@@ -60,7 +76,7 @@ export const createCar = async (car) => {
 
     const result = await response.json();
     return result;
-}
+};
 
 export const deleteCar = async (id) => {
     const token = localStorage.getItem("token");
@@ -75,4 +91,4 @@ export const deleteCar = async (id) => {
 
     const result = await response.json();
     return result;
-}
+};

@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setToken } from "../redux/slices/auth";
 import { login } from "../service/auth";
 import { toast } from "react-toastify";
+import NavigationBar from "../components/Navbar";
 
 export const Route = createLazyFileRoute("/login")({
     component: Login,
@@ -61,7 +62,7 @@ function Login() {
                         alt="Pict"
                         style={{
                             width: "100%",
-                            height: "100vh", 
+                            height: "100vh",
                             objectFit: "cover",
                             margin: 0,
                             padding: 0,

@@ -7,7 +7,6 @@ import Button from "react-bootstrap/Button";
 import Image from "react-bootstrap/Image";
 import Form from "react-bootstrap/Form";
 import { getDetailCar } from "../../../service/cars";
-import { toast } from "react-toastify";
 import ReactLoading from "react-loading";
 import { IoArrowBackCircle } from "react-icons/io5";
 import { FaArrowRight } from "react-icons/fa";
@@ -18,11 +17,15 @@ import {
 import gsap from "gsap";
 import { getManufactures } from "../../../service/manufactures";
 import { setSuccess } from "../../../redux/slices/success";
-import NavigationBar from "../../../components/Navbar";
 import SideNavigationBar from "../../../components/SideNav";
+import Protected from "../../../components/Auth/Protected";
 
 export const Route = createLazyFileRoute("/admin/cars/$id")({
-    component: DetailsCar,
+    component: () => (
+        <Protected roles={[1]}>
+            <DetailsCar />
+        </Protected>
+    ),
 });
 
 function DetailsCar() {
@@ -209,262 +212,293 @@ function DetailsCar() {
     }
 
     return (
-      <>
-        <div>
-          <NavigationBar />
-          <SideNavigationBar />
-        </div>
-        <Row
-          className="d-flex flex justify-content-center align-items-center"
-          style={{ height: "90vh" }}
-          ref={containerRef}
-        >
-          <IoArrowBackCircle
-            className="position-absolute"
-            role="button"
-            onClick={onClickBack}
-            style={{
-              color: "#0d6efd",
-              width: "7vw",
-              height: "7vh",
-              top: "6rem",
-              left: "7rem",
-            }}
-          />
-          <Col
-            md={5}
-            className="d-flex flex-column justify-content-center align-items-center"
-            style={{
-              height: "100%",
-              padding: "1rem",
-            }}
-          >
-            <div
-              ref={imageRef}
-              className="ratio ratio-1x1"
-              style={{
-                maxWidth: "25rem",
-                width: "100%",
-                border: "1px solid #ccc",
-                borderRadius: "1rem",
-              }}
-            >
-              <Image
-                src={imageURL}
-                fluid
-                className="object-fit-cover"
-                alt="Car Image"
-                style={{ borderRadius: "1rem" }}
-              />
+        <>
+            <div>
+                <SideNavigationBar />
             </div>
-          </Col>
-
-          <Col
-            md={5}
-            className="d-flex justify-content-center align-items-center"
-          >
-            <Form
-              style={{ width: "100%", maxWidth: "400px" }}
-              className="d-flex gap-2 flex-column"
-              ref={formRef}
+            <Row
+                className="d-flex flex justify-content-center align-items-center"
+                style={{ height: "90vh" }}
+                ref={containerRef}
             >
-              <h3 className="mb-4 text-center fw-bold">Car Details</h3>
-
-              <Form.Group controlId="availability" className="d-flex gap-2">
-                <div style={{ width: "40%" }}>
-                  <Form.Label>Available</Form.Label>
-                  <Form.Select
-                    aria-label="Default select example"
-                    disabled={user?.role_id === 2}
-                    onChange={(event) =>
-                      setAvailability({
-                        ...availability,
-                        available: event.target.value,
-                      })
-                    }
-                  >
-                    <option id={1} disabled selected>
-                      {(availability.available === true ||
-                        availability.available === "true") &&
-                        "Available"}
-                      {(availability.available === false ||
-                        availability.available === "false") &&
-                        "Not Available"}
-                      {!availability.available && "Select Availability"}
-                    </option>
-                    <option value={true}>Available</option>
-                    <option value={false}>Not Available</option>
-                  </Form.Select>
-                </div>
-                <div style={{ width: "35%" }}>
-                  <Form.Label className="">Available At</Form.Label>
-                  <Form.Control
-                    type="date"
-                    defaultValue={availability?.available_at || ""}
-                    disabled={user?.role_id === 2}
-                    onChange={(event) =>
-                      setAvailability({
-                        ...availability,
-                        available_at: event.target.value,
-                      })
-                    }
-                  />
-                </div>
-                <div style={{ width: "25%" }}>
-                  <Form.Label className="">Rent / Day</Form.Label>
-                  <Form.Control
-                    type="text"
-                    defaultValue={availability.rent_perday || ""}
-                    disabled={user?.role_id === 2}
-                    onChange={(event) =>
-                      setAvailability({
-                        ...availability,
-                        rent_perday: event.target.value,
-                      })
-                    }
-                  />
-                </div>
-              </Form.Group>
-
-              <Form.Group controlId="carDetails1" className="d-flex gap-3">
-                <div style={{ width: "25%" }}>
-                  <Form.Label>Capacity</Form.Label>
-                  <Form.Control
-                    type="number"
-                    disabled={user?.role_id === 2}
-                    defaultValue={carDetails.capacity || 0}
-                    onChange={(event) =>
-                      setCarDetails({
-                        ...carDetails,
-                        capacity: event.target.value,
-                      })
-                    }
-                  />
-                </div>
-                <div style={{ width: "35%" }}>
-                  <Form.Label className="">Plate</Form.Label>
-                  <Form.Control
-                    type="text"
-                    disabled={user?.role_id === 2}
-                    defaultValue={carDetails.plate || "Your Plate"}
-                    onChange={(event) =>
-                      setCarDetails({
-                        ...carDetails,
-                        plate: event.target.value,
-                      })
-                    }
-                  />
-                </div>
-                <div style={{ width: "40%" }}>
-                  <Form.Label className="">Transmission</Form.Label>
-                  <Form.Select
-                    disabled={user?.role_id === 2}
-                    onChange={(event) =>
-                      setCarDetails({
-                        ...carDetails,
-                        transmission: event.target.value,
-                      })
-                    }
-                  >
-                    <option disabled selected>
-                      {carDetails.transmission || "Select Transmission"}
-                    </option>
-                    <option value="Manual">Manual</option>
-                    <option value="Automatic">Automatic</option>
-                  </Form.Select>
-                </div>
-              </Form.Group>
-
-              <Form.Group controlId="carDetails2" className="d-flex gap-3">
-                <div style={{ width: "30%" }}>
-                  <Form.Label>Year</Form.Label>
-                  <Form.Select
-                    disabled={user?.role_id === 2}
-                    onChange={(event) => {
-                      setCarDetails({
-                        ...carDetails,
-                        year: event.target.value,
-                      });
+                <IoArrowBackCircle
+                    className="position-absolute"
+                    role="button"
+                    onClick={onClickBack}
+                    style={{
+                        color: "#0d6efd",
+                        width: "7vw",
+                        height: "7vh",
+                        top: "6rem",
+                        left: "7rem",
                     }}
-                  >
-                    <option disabled selected>
-                      {carDetails.year || "Select Year"}
-                    </option>
-                    {[...Array(5)].map((_, i) => (
-                      <option key={year - i} value={year - i}>
-                        {year - i}
-                      </option>
-                    ))}
-                  </Form.Select>
-                </div>
-                <div style={{ width: "70%" }}>
-                  <Form.Label>Manufactures</Form.Label>
-                  <Form.Select
-                    disabled={user?.role_id === 2}
-                    onChange={(event) => {
-                      setCarDetails({
-                        ...carDetails,
-                        manufacture_id: event.target.value,
-                        manufacture_name:
-                          event.target.options[event.target.selectedIndex].text,
-                      });
-                    }}
-                  >
-                    <option disabled selected>
-                      {currentManufacture || "Select Manufacture"}
-                    </option>
-                    {manufactures.map((manufacture) => (
-                      <option key={manufacture.id} value={manufacture.id}>
-                        {manufacture.name}
-                      </option>
-                    ))}
-                  </Form.Select>
-                </div>
-              </Form.Group>
-
-              <Form.Group controlId="description" className="mb-3">
-                <Form.Label>Description</Form.Label>
-                <Form.Control
-                  as="textarea"
-                  rows={2}
-                  disabled={user?.role_id === 2}
-                  style={{ fontSize: "0.9rem" }}
-                  defaultValue={carDetails.description || ""}
-                  placeholder="Enter a detailed description here"
-                  onChange={(event) => {
-                    setCarDetails({
-                      ...carDetails,
-                      description: event.target.value,
-                    });
-                  }}
                 />
-              </Form.Group>
+                <Col
+                    md={5}
+                    className="d-flex flex-column justify-content-center align-items-center"
+                    style={{
+                        height: "100%",
+                        padding: "1rem",
+                    }}
+                >
+                    <div
+                        ref={imageRef}
+                        className="ratio ratio-1x1"
+                        style={{
+                            maxWidth: "25rem",
+                            width: "100%",
+                            border: "1px solid #ccc",
+                            borderRadius: "1rem",
+                        }}
+                    >
+                        <Image
+                            src={imageURL}
+                            fluid
+                            className="object-fit-cover"
+                            alt="Car Image"
+                            style={{ borderRadius: "1rem" }}
+                        />
+                    </div>
+                </Col>
 
-              <Button
-                variant="primary"
-                type="button"
-                className="w-100"
-                onMouseEnter={() => {
-                  gsap.to("#arrow-right", {
-                    duration: 0.5,
-                    x: 10,
-                    ease: "power3.inOut",
-                  });
-                }}
-                onMouseLeave={() => {
-                  gsap.to("#arrow-right", {
-                    duration: 0.5,
-                    x: 0,
-                    ease: "power3.inOut",
-                  });
-                }}
-                onClick={onClickForm}
-              >
-                Next <FaArrowRight className="ms-2" id="arrow-right" />
-              </Button>
-            </Form>
-          </Col>
-        </Row>
-      </>
+                <Col
+                    md={5}
+                    className="d-flex justify-content-center align-items-center"
+                >
+                    <Form
+                        style={{ width: "100%", maxWidth: "400px" }}
+                        className="d-flex gap-2 flex-column"
+                        ref={formRef}
+                    >
+                        <h3 className="mb-4 text-center fw-bold">
+                            Car Details
+                        </h3>
+
+                        <Form.Group
+                            controlId="availability"
+                            className="d-flex gap-2"
+                        >
+                            <div style={{ width: "40%" }}>
+                                <Form.Label>Available</Form.Label>
+                                <Form.Select
+                                    aria-label="Default select example"
+                                    disabled={user?.role_id === 2}
+                                    onChange={(event) =>
+                                        setAvailability({
+                                            ...availability,
+                                            available: event.target.value,
+                                        })
+                                    }
+                                >
+                                    <option id={1} disabled selected>
+                                        {(availability.available === true ||
+                                            availability.available ===
+                                                "true") &&
+                                            "Available"}
+                                        {(availability.available === false ||
+                                            availability.available ===
+                                                "false") &&
+                                            "Not Available"}
+                                        {!availability.available &&
+                                            "Select Availability"}
+                                    </option>
+                                    <option value={true}>Available</option>
+                                    <option value={false}>Not Available</option>
+                                </Form.Select>
+                            </div>
+                            <div style={{ width: "35%" }}>
+                                <Form.Label className="">
+                                    Available At
+                                </Form.Label>
+                                <Form.Control
+                                    type="date"
+                                    defaultValue={
+                                        availability?.available_at || ""
+                                    }
+                                    disabled={user?.role_id === 2}
+                                    onChange={(event) =>
+                                        setAvailability({
+                                            ...availability,
+                                            available_at: event.target.value,
+                                        })
+                                    }
+                                />
+                            </div>
+                            <div style={{ width: "25%" }}>
+                                <Form.Label className="">Rent / Day</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    defaultValue={
+                                        availability.rent_perday || ""
+                                    }
+                                    disabled={user?.role_id === 2}
+                                    onChange={(event) =>
+                                        setAvailability({
+                                            ...availability,
+                                            rent_perday: event.target.value,
+                                        })
+                                    }
+                                />
+                            </div>
+                        </Form.Group>
+
+                        <Form.Group
+                            controlId="carDetails1"
+                            className="d-flex gap-3"
+                        >
+                            <div style={{ width: "25%" }}>
+                                <Form.Label>Capacity</Form.Label>
+                                <Form.Control
+                                    type="number"
+                                    disabled={user?.role_id === 2}
+                                    defaultValue={carDetails.capacity || 0}
+                                    onChange={(event) =>
+                                        setCarDetails({
+                                            ...carDetails,
+                                            capacity: event.target.value,
+                                        })
+                                    }
+                                />
+                            </div>
+                            <div style={{ width: "35%" }}>
+                                <Form.Label className="">Plate</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    disabled={user?.role_id === 2}
+                                    defaultValue={
+                                        carDetails.plate || "Your Plate"
+                                    }
+                                    onChange={(event) =>
+                                        setCarDetails({
+                                            ...carDetails,
+                                            plate: event.target.value,
+                                        })
+                                    }
+                                />
+                            </div>
+                            <div style={{ width: "40%" }}>
+                                <Form.Label className="">
+                                    Transmission
+                                </Form.Label>
+                                <Form.Select
+                                    disabled={user?.role_id === 2}
+                                    onChange={(event) =>
+                                        setCarDetails({
+                                            ...carDetails,
+                                            transmission: event.target.value,
+                                        })
+                                    }
+                                >
+                                    <option disabled selected>
+                                        {carDetails.transmission ||
+                                            "Select Transmission"}
+                                    </option>
+                                    <option value="Manual">Manual</option>
+                                    <option value="Automatic">Automatic</option>
+                                </Form.Select>
+                            </div>
+                        </Form.Group>
+
+                        <Form.Group
+                            controlId="carDetails2"
+                            className="d-flex gap-3"
+                        >
+                            <div style={{ width: "30%" }}>
+                                <Form.Label>Year</Form.Label>
+                                <Form.Select
+                                    disabled={user?.role_id === 2}
+                                    onChange={(event) => {
+                                        setCarDetails({
+                                            ...carDetails,
+                                            year: event.target.value,
+                                        });
+                                    }}
+                                >
+                                    <option disabled selected>
+                                        {carDetails.year || "Select Year"}
+                                    </option>
+                                    {[...Array(5)].map((_, i) => (
+                                        <option key={year - i} value={year - i}>
+                                            {year - i}
+                                        </option>
+                                    ))}
+                                </Form.Select>
+                            </div>
+                            <div style={{ width: "70%" }}>
+                                <Form.Label>Manufactures</Form.Label>
+                                <Form.Select
+                                    disabled={user?.role_id === 2}
+                                    onChange={(event) => {
+                                        setCarDetails({
+                                            ...carDetails,
+                                            manufacture_id: event.target.value,
+                                            manufacture_name:
+                                                event.target.options[
+                                                    event.target.selectedIndex
+                                                ].text,
+                                        });
+                                    }}
+                                >
+                                    <option disabled selected>
+                                        {currentManufacture ||
+                                            "Select Manufacture"}
+                                    </option>
+                                    {manufactures.map((manufacture) => (
+                                        <option
+                                            key={manufacture.id}
+                                            value={manufacture.id}
+                                        >
+                                            {manufacture.name}
+                                        </option>
+                                    ))}
+                                </Form.Select>
+                            </div>
+                        </Form.Group>
+
+                        <Form.Group controlId="description" className="mb-3">
+                            <Form.Label>Description</Form.Label>
+                            <Form.Control
+                                as="textarea"
+                                rows={2}
+                                disabled={user?.role_id === 2}
+                                style={{ fontSize: "0.9rem" }}
+                                defaultValue={carDetails.description || ""}
+                                placeholder="Enter a detailed description here"
+                                onChange={(event) => {
+                                    setCarDetails({
+                                        ...carDetails,
+                                        description: event.target.value,
+                                    });
+                                }}
+                            />
+                        </Form.Group>
+
+                        <Button
+                            variant="primary"
+                            type="button"
+                            className="w-100"
+                            onMouseEnter={() => {
+                                gsap.to("#arrow-right", {
+                                    duration: 0.5,
+                                    x: 10,
+                                    ease: "power3.inOut",
+                                });
+                            }}
+                            onMouseLeave={() => {
+                                gsap.to("#arrow-right", {
+                                    duration: 0.5,
+                                    x: 0,
+                                    ease: "power3.inOut",
+                                });
+                            }}
+                            onClick={onClickForm}
+                        >
+                            Next{" "}
+                            <FaArrowRight className="ms-2" id="arrow-right" />
+                        </Button>
+                    </Form>
+                </Col>
+            </Row>
+        </>
     );
 }
