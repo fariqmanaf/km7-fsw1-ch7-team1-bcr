@@ -24,6 +24,7 @@ import {
 } from "../../../redux/slices/car_details";
 import { setSuccess } from "../../../redux/slices/success";
 import Protected from "../../../components/Auth/Protected";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 export const Route = createLazyFileRoute("/admin/cars/next-form")({
     component: () => (
@@ -59,7 +60,6 @@ function NextForm() {
     const specsState = useSelector((state) => state.car_details.specs);
 
     const [file, setFile] = useState(null);
-    const [isLoading, setIsLoading] = useState(false);
     const [imageURL, setImageURL] = useState(null);
     const [options, setOptions] = useState([]);
     const [specs, setSpecs] = useState([]);
@@ -71,57 +71,116 @@ function NextForm() {
     const [selectedSpecs, setSelectedSpecs] = useState([]);
     const maxSelection = 3;
 
+    const {
+        data: optionsData,
+        isSuccess: isOptionSuccess,
+        isError: isOptionError,
+    } = useQuery({
+        queryKey: ["options"],
+        queryFn: () => getOptions(),
+        enabled: !!id,
+    });
+
+    const {
+        data: specsData,
+        isSuccess: isSpecSuccess,
+        isError: isSpecError,
+    } = useQuery({
+        queryKey: ["specs"],
+        queryFn: () => getSpecs(),
+        enabled: !!id,
+    });
+
+    const {
+        data: detailCarData,
+        isPending: isCarsPending,
+        isSuccess: isCarsSuccess,
+        isError: isCarsError,
+    } = useQuery({
+        queryKey: ["detailCar", id],
+        queryFn: () => getDetailCar(id),
+        enabled: !!id,
+    });
+
+    useEffect(() => {
+        if (isOptionSuccess) {
+            setOptions(optionsData?.data);
+        }
+        if (isOptionError) {
+            toast.error("Failed to get options data!");
+        }
+    }, [optionsData, isOptionSuccess, isOptionError]);
+
+    useEffect(() => {
+        if (isSpecSuccess) {
+            setSpecs(specsData?.data);
+        }
+        if (isSpecError) {
+            toast.error("Failed to get specs data!");
+        }
+    }, [specsData, isSpecSuccess, isSpecError]);
+
+    useEffect(() => {
+        if (isCarsSuccess) {
+            {
+                if (modelsState === null) {
+                    dispatch(setModelsState(detailCarData.data?.models));
+                } else {
+                    dispatch(setModelsState(modelsState));
+                }
+            }
+            setuserOptions(detailCarData.data?.options);
+            setUserSpecs(detailCarData.data?.specs);
+            setImageURL(detailCarData.data?.car_details[0]?.image);
+        }
+        if (isCarsError) {
+            toast.error("Failed to get car data!");
+        }
+    }, [detailCarData, isCarsError, isCarsSuccess]);
+
+    const { mutate: updateCarMutation } = useMutation({
+        mutationFn: (formData) => updateCar(id, formData),
+        onSuccess: (data) => {
+            if (data?.success) {
+                dispatch(setModelsState(null));
+                dispatch(setOptionsState(null));
+                dispatch(setSpecsState(null));
+                dispatch(setDetailsCar(null));
+                dispatch(setAvailabilityState(null));
+                toast.success("Your Car Data Has Been Updated!");
+                dispatch(setSuccess(true));
+            } else {
+                toast.error(data.message);
+            }
+        },
+        onError: () => toast.error("Failed to update car data!"),
+    });
+
     useLayoutEffect(() => {
-        gsap.from(containerRef.current, {
-            opacity: 0,
-            duration: 1,
-            ease: "power3.inOut",
-        });
-        gsap.from(imageRef.current, {
-            opacity: 0,
-            y: 50,
-            duration: 1,
-            ease: "power3.inOut",
-        });
-        gsap.from(formRef.current, {
-            opacity: 0,
-            y: 50,
-            duration: 1,
-            ease: "power3.inOut",
-        });
-    }, [isLoading]);
+        gsap.context(() => {
+            gsap.set(containerRef.current, { opacity: 0 });
+            gsap.set(imageRef.current, { opacity: 0, y: 50 });
+            gsap.set(formRef.current, { opacity: 0, y: 50 });
 
-    useEffect(() => {
-        const getOptionsData = async () => {
-            setIsLoading(true);
-            const result = await getOptions();
-            if (result?.success) {
-                setOptions(result.data);
-                setIsLoading(false);
-            } else {
-                toast.error(result.message);
-                setIsLoading(false);
-            }
-        };
-
-        getOptionsData();
-    }, [id]);
-
-    useEffect(() => {
-        const getSpecsData = async () => {
-            setIsLoading(true);
-            const result = await getSpecs();
-            if (result?.success) {
-                setSpecs(result.data);
-                setIsLoading(false);
-            } else {
-                toast.error(result.message);
-                setIsLoading(false);
-            }
-        };
-
-        getSpecsData();
-    }, [id]);
+            gsap.to(containerRef.current, {
+                duration: 1,
+                opacity: 1,
+                ease: "power3.inOut",
+            });
+            gsap.to(imageRef.current, {
+                duration: 1,
+                opacity: 1,
+                y: 0,
+                ease: "power3.inOut",
+            });
+            gsap.to(formRef.current, {
+                duration: 1,
+                opacity: 1,
+                y: 0,
+                ease: "power3.inOut",
+            });
+        }, containerRef);
+    }, [isCarsPending]);
 
     useEffect(() => {
         setFormSpecs(
@@ -158,33 +217,6 @@ function NextForm() {
     }, [options, userOptions]);
 
     useEffect(() => {
-        const getDetailCarData = async (id) => {
-            setIsLoading(true);
-            const result = await getDetailCar(id);
-            if (result?.success) {
-                {
-                    if (modelsState === null) {
-                        dispatch(setModelsState(result.data?.models));
-                    } else {
-                        dispatch(setModelsState(modelsState));
-                    }
-                }
-                setuserOptions(result.data?.options);
-                setUserSpecs(result.data?.specs);
-                setImageURL(result.data?.car_details[0]?.image);
-                setIsLoading(false);
-            } else {
-                toast.error(result.message);
-                setIsLoading(false);
-            }
-        };
-
-        if (id) {
-            getDetailCarData(id);
-        }
-    }, [id]);
-
-    useEffect(() => {
         if (success) {
             const carId = localStorage.getItem("carId");
             localStorage.removeItem("carId");
@@ -207,7 +239,7 @@ function NextForm() {
         );
     }
 
-    if (isLoading) {
+    if (isCarsPending) {
         return (
             <div
                 style={{ height: "90vh" }}
@@ -270,25 +302,7 @@ function NextForm() {
         formData.append("availableAt", availabilityState.available_at);
         formData.append("available", availabilityState.available);
 
-        const updateCarData = async () => {
-            setIsLoading(true);
-            const result = await updateCar(id, formData);
-            if (result?.success) {
-                setIsLoading(false);
-                dispatch(setModelsState(null));
-                dispatch(setOptionsState(null));
-                dispatch(setSpecsState(null));
-                dispatch(setDetailsCar(null));
-                dispatch(setAvailabilityState(null));
-                toast.success("Your Car Data Has Been Updated!");
-                dispatch(setSuccess(true));
-            } else {
-                toast.error(result.message);
-                setIsLoading(false);
-            }
-        };
-
-        updateCarData();
+        updateCarMutation(formData);
     };
 
     const handleChangeOptions = (selected) => {
