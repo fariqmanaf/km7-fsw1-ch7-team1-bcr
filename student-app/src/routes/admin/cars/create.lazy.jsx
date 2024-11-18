@@ -17,6 +17,8 @@ import gsap from "gsap";
 import { getManufactures } from "../../../service/manufactures";
 import Protected from "../../../components/Auth/Protected";
 import SideNavigationBar from "../../../components/SideNav";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { toast } from "react-toastify";
 
 export const Route = createLazyFileRoute("/admin/cars/create")({
     component: () => (
@@ -45,7 +47,6 @@ function CreateCars() {
         (state) => state.car_details.availability
     );
 
-    const [isLoading, setIsLoading] = useState(false);
     const [manufactures, setManufactures] = useState([]);
     const [currentManufacture, setCurrentManufacture] = useState(
         previousDetails === null ? "" : previousDetails.manufacture_name
@@ -58,39 +59,50 @@ function CreateCars() {
     );
     const [imageURL, setImageURL] = useState(previousDetails?.url_image || "");
 
-    useEffect(() => {
-        const getManufactureData = async () => {
-            setIsLoading(true);
-            const result = await getManufactures();
-            if (result.success) {
-                setManufactures(result.data);
-                setIsLoading(false);
-            }
-        };
-        if (token) {
-            getManufactureData();
-        }
-    }, [token]);
+    const {
+        data: manufacturesData,
+        isSuccess,
+        isPending,
+        isError,
+    } = useQuery({
+        queryKey: ["manufactures"],
+        queryFn: () => getManufactures(),
+    });
 
     useLayoutEffect(() => {
-        gsap.from(containerRef.current, {
-            opacity: 0,
-            duration: 1,
-            ease: "power3.inOut",
-        });
-        gsap.from(imageRef.current, {
-            opacity: 0,
-            y: 50,
-            duration: 1,
-            ease: "power3.inOut",
-        });
-        gsap.from(formRef.current, {
-            opacity: 0,
-            y: 50,
-            duration: 1,
-            ease: "power3.inOut",
-        });
-    }, [isLoading]);
+        gsap.context(() => {
+            gsap.set(containerRef.current, { opacity: 0 });
+            gsap.set(imageRef.current, { opacity: 0, y: 50 });
+            gsap.set(formRef.current, { opacity: 0, y: 50 });
+
+            gsap.to(containerRef.current, {
+                duration: 1,
+                opacity: 1,
+                ease: "power3.inOut",
+            });
+            gsap.to(imageRef.current, {
+                duration: 1,
+                opacity: 1,
+                y: 0,
+                ease: "power3.inOut",
+            });
+            gsap.to(formRef.current, {
+                duration: 1,
+                opacity: 1,
+                y: 0,
+                ease: "power3.inOut",
+            });
+        }, containerRef);
+    }, [isPending]);
+
+    useEffect(() => {
+        if (isSuccess) {
+            setManufactures(manufacturesData.data);
+        }
+        if (isError) {
+            toast.error("Failed to get manufactures data");
+        }
+    }, [isSuccess, manufacturesData, isPending]);
 
     if (!token) {
         return (
@@ -107,7 +119,7 @@ function CreateCars() {
         );
     }
 
-    if (isLoading) {
+    if (isPending) {
         return (
             <div
                 style={{ height: "90vh" }}
