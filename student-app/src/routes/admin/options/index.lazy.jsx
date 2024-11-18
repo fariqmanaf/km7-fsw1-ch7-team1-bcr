@@ -1,5 +1,4 @@
 import { createLazyFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
@@ -10,6 +9,7 @@ import OptionItem from "../../../components/Option/OptionItem";
 import ReactLoading from "react-loading";
 import NavigationBar from "../../../components/Navbar";
 import SideNavigationBar from "../../../components/SideNav";
+import { useQuery } from "@tanstack/react-query";
 
 export const Route = createLazyFileRoute("/admin/options/")({
   component: Option,
@@ -17,23 +17,12 @@ export const Route = createLazyFileRoute("/admin/options/")({
 
 function Option() {
   const { token, user } = useSelector((state) => state.auth);
-  const [options, setOptions] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    const getOptionData = async () => {
-      setIsLoading(true);
-      const result = await getOptions();
-      if (result.success && result.data) {
-        setOptions(result.data);
-      }
-      setIsLoading(false);
-    };
-
-    if (token) {
-      getOptionData();
-    }
-  }, [token]);
+  const { data, isSuccess, isLoading } = useQuery({
+    queryKey: ["options"],
+    queryFn: () => getOptions(),
+    enabled: !!token,
+  });
 
   if (!token) {
     return (
@@ -65,6 +54,8 @@ function Option() {
       </div>
     );
   }
+
+  const options = isSuccess ? data.data : [];
 
   return (
     <>
