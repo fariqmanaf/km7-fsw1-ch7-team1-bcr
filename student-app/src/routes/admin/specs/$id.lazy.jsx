@@ -10,6 +10,7 @@ import { confirmAlert } from 'react-confirm-alert'
 import ReactLoading from 'react-loading'
 import { IoArrowBackCircle } from 'react-icons/io5'
 import Protected from '../../../components/Auth/Protected'
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 export const Route = createLazyFileRoute('/admin/specs/$id')({
   component: () => (
@@ -22,30 +23,31 @@ export const Route = createLazyFileRoute('/admin/specs/$id')({
 function SpecDetail() {
   const { id } = Route.useParams()
   const navigate = useNavigate()
-
   const [spec, setSpec] = useState(null)
-  const [isLoading, setIsLoading] = useState(false)
-  const [isNotFound, setIsNotFound] = useState(false)
 
+  const { data, isSuccess, isPending, isError } = useQuery({
+    queryKey: ["specs", id],
+    queryFn: () => getDetailSpec(id),
+    enabled: !!id,
+  });
+
+  const { mutate: deleting, isPending: isDeleteProcessing } = useMutation({
+    mutationFn: () => deleteSpec(id),
+    onSuccess: () => {
+      navigate({ to: "/admin/specs" });
+    },
+    onError: (error) => {
+      toast.error(error?.message);
+    },
+  });
+  
   useEffect(() => {
-    const getDetailSpecData = async (id) => {
-      setIsLoading(true)
-      const result = await getDetailSpec(id)
-      if (result?.success) {
-        setSpec(result.data)
-        setIsNotFound(false)
-      } else {
-        setIsNotFound(true)
-      }
-      setIsLoading(false)
+    if (isSuccess) {
+      setSpec(data);
     }
+  }, [data, isSuccess]);
 
-    if (id) {
-      getDetailSpecData(id)
-    }
-  }, [id])
-
-  if (isLoading) {
+  if (isPending) {
     return (
       <div
         style={{ height: '90vh' }}
@@ -61,7 +63,7 @@ function SpecDetail() {
     )
   }
 
-  if (isNotFound) {
+  if (isError) {
     return (
       <Row className="mt-5">
         <Col>
@@ -81,10 +83,10 @@ function SpecDetail() {
         {
           label: 'Yes',
           onClick: async () => {
-            const result = await deleteSpec(id)
+            deleting();
             if (result?.success) {
-              navigate({ to: '/admin/specs' })
-              return
+              navigate({ to: "/admin/specs" });
+              return;
             }
 
             toast.error(result?.message)
@@ -105,18 +107,18 @@ function SpecDetail() {
   return (
     <Row
       className="d-flex flex justify-content-center align-items-center"
-      style={{ height: '50vh' }}
+      style={{ height: "50vh" }}
     >
       <IoArrowBackCircle
         className="position-absolute"
         role="button"
         onClick={onClickBack}
         style={{
-          color: '#0d6efd',
-          width: '7vw',
-          height: '7vh',
-          top: '6rem',
-          left: '7rem',
+          color: "#0d6efd",
+          width: "7vw",
+          height: "7vh",
+          top: "6rem",
+          left: "7rem",
         }}
       />
       <Row className="mt-5">
@@ -127,7 +129,11 @@ function SpecDetail() {
               <Card.Title>Detail</Card.Title>
               <Card.Text>Spec : {spec?.spec}</Card.Text>
               <div className="d-grid gap-2">
-                <Button onClick={onDelete} variant="danger">
+                <Button
+                  onClick={onDelete}
+                  variant="danger"
+                  disabled={isDeleteProcessing}
+                >
                   Delete Spec
                 </Button>
               </div>
@@ -137,5 +143,5 @@ function SpecDetail() {
         <Col md={3}></Col>
       </Row>
     </Row>
-  )
+  );
 }

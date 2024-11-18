@@ -9,6 +9,8 @@ import { getDetailSpec, updateSpec } from '../../../../service/spec'
 import { toast } from 'react-toastify'
 import { IoArrowBackCircle } from 'react-icons/io5'
 import Protected from '../../../../components/Auth/Protected'
+import { useMutation, useQuery } from "@tanstack/react-query";
+
 
 export const Route = createLazyFileRoute('/admin/specs/edit/$id')({
   component: () => (
@@ -22,61 +24,67 @@ function EditSpec() {
   const { id } = Route.useParams()
   const navigate = useNavigate()
   const [spec, setSpec] = useState('')
-  const [isNotFound, setIsNotFound] = useState(false)
 
-  useEffect(() => {
-    const getDetailSpecData = async (id) => {
-      const result = await getDetailSpec(id)
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["spec", id],
+    queryFn: () => getDetailSpec(id),
+    onSuccess: (result) => {
       if (result?.success) {
-        setSpec(result.data?.spec)
-        setIsNotFound(false)
-      } else {
-        setIsNotFound(true)
+        setSpec(result.data?.spec);
       }
-    }
+    },
+    enabled: !!id,
+  });
 
-    if (id) {
-      getDetailSpecData(id)
-    }
-  }, [id])
+  const mutation = useMutation({
+    mutationFn: (newOption) => updateSpec(id, newOption),
+    onSuccess: (result) => {
+      if (result?.success) {
+        toast.success("Spec updated successfully!");
+        navigate({ to: "/admin/specs" });
+      } else {
+        toast.error(result?.message);
+      }
+    },
+    onError: () => {
+      toast.error("An error occurred while updating the spec.");
+    },
+  });
 
-  if (isNotFound) {
-    navigate({ to: '/admin/specs' })
-    return
+  if (isError) {
+    navigate({ to: "/admin/specs" });
+    return null;
   }
 
   const onSubmit = async (event) => {
     event.preventDefault()
-
-    const request = { spec }
-    const result = await updateSpec(id, request)
-    if (result?.success) {
-      toast.success('Spec updated successfully!')
-      navigate({ to: '/admin/specs' })
-    } else {
-      toast.error(result?.message)
-    }
+    const request = { spec };
+    mutation.mutate(request);
   }
 
   function onClickBack() {
-    navigate({ to: '/admin/specs' })
+    navigate({ to: "/admin/options" });
+  }
+
+  if (isLoading || mutation.isLoading) {
+    return <div>Loading...</div>;
   }
 
   return (
     <Row
       className="d-flex flex justify-content-center align-items-center"
-      style={{ height: '50vh' }}
+      style={{ height: "50vh" }}
     >
       <IoArrowBackCircle
         className="position-absolute"
         role="button"
         onClick={onClickBack}
         style={{
-          color: '#0d6efd',
-          width: '7vw',
-          height: '7vh',
-          top: '6rem',
-          left: '7rem',
+          color: "#0d6efd",
+          width: "7vw",
+          height: "7vh",
+          top: "6rem",
+          left: "7rem",
         }}
       />
       <Row className="mt-5">
@@ -94,13 +102,17 @@ function EditSpec() {
                       type="text"
                       placeholder="Spec"
                       required
-                      value={spec}
+                      value={data.option}
                       onChange={(event) => setSpec(event.target.value)}
                     />
                   </Col>
                 </Form.Group>
                 <div className="d-grid gap-2">
-                  <Button type="submit" variant="primary">
+                  <Button
+                    type="submit"
+                    disabled={mutation.isLoading}
+                    variant="primary"
+                  >
                     Update Spec
                   </Button>
                 </div>
@@ -110,5 +122,5 @@ function EditSpec() {
         </Col>
       </Row>
     </Row>
-  )
+  );
 }

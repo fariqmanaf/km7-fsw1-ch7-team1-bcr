@@ -16,6 +16,7 @@ import Image from "react-bootstrap/Image";
 import ReactLoading from "react-loading";
 import { getCarsByQueryParams } from "../../service/cars";
 import { IoCarSharp } from "react-icons/io5";
+import { useQuery } from "@tanstack/react-query";
 
 export const Route = createLazyFileRoute("/cars/")({
     component: SearchCars,

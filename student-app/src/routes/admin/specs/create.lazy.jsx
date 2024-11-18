@@ -9,6 +9,7 @@ import { createSpec } from '../../../service/spec'
 import { IoArrowBackCircle } from 'react-icons/io5'
 import { toast } from 'react-toastify'
 import Protected from '../../../components/Auth/Protected'
+import { useMutation } from "@tanstack/react-query";
 
 export const Route = createLazyFileRoute('/admin/specs/create')({
   component: () => (
@@ -22,18 +23,24 @@ function CreateSpec() {
   const navigate = useNavigate()
   const [spec, setSpec] = useState('')
 
-  const onSubmit = async (event) => {
-    event.preventDefault()
+  const { mutate: create, isPending } = useMutation({
+    mutationFn: (request) => createSpec(request),
+    onSuccess: () => {
+      navigate({ to: "/admin/specs" });
+    },
+    onError: (error) => {
+      toast.error(error?.message);
+    },
+  });
 
-    const request = { spec }
-    const result = await createSpec(request)
-    if (result?.success) {
-      toast.success('Spec created successfully!')
-      navigate({ to: '/admin/specs' })
-    } else {
-      toast.error(result?.message)
-    }
-  }
+  const onSubmit = async (event) => {
+    event.preventDefault();
+
+    const request = {
+      spec,
+    };
+    create(request);
+  };
 
   function onClickBack() {
     navigate({ to: '/admin/specs' })
@@ -42,18 +49,18 @@ function CreateSpec() {
   return (
     <Row
       className="d-flex flex justify-content-center align-items-center"
-      style={{ height: '50vh' }}
+      style={{ height: "50vh" }}
     >
       <IoArrowBackCircle
         className="position-absolute"
         role="button"
         onClick={onClickBack}
         style={{
-          color: '#0d6efd',
-          width: '7vw',
-          height: '7vh',
-          top: '6rem',
-          left: '7rem',
+          color: "#0d6efd",
+          width: "7vw",
+          height: "7vh",
+          top: "6rem",
+          left: "7rem",
         }}
       />
       <Row className="mt-5">
@@ -77,7 +84,7 @@ function CreateSpec() {
                   </Col>
                 </Form.Group>
                 <div className="d-grid gap-2">
-                  <Button type="submit" variant="primary">
+                  <Button type="submit" disabled={isPending}  variant="primary">
                     Create Spec
                   </Button>
                 </div>
@@ -87,5 +94,5 @@ function CreateSpec() {
         </Col>
       </Row>
     </Row>
-  )
+  );
 }
