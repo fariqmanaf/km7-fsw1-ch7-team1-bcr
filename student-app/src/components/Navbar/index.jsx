@@ -32,7 +32,7 @@ const NavigationBar = () => {
         if (!token) {
             navigate({ to: "/" });
         }
-        if (isSuccess) {
+        if (isSuccess && token) {
             dispatch(setUser(profileData.data));
             return;
         }
@@ -41,7 +41,7 @@ const NavigationBar = () => {
             dispatch(setToken(null));
             navigate({ to: "/" });
         }
-    }, [profileData]);
+    }, [token, profileData, isError, isSuccess]);
 
     const logout = (event) => {
         event.preventDefault();
