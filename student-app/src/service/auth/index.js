@@ -13,7 +13,7 @@ export const login = async (request) => {
         throw new Error(result?.message);
     }
 
-    return result?.data;
+    return result;
 };
 
 export const register = async (request) => {

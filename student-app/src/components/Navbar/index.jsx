@@ -32,7 +32,7 @@ const NavigationBar = () => {
         if (!token) {
             navigate({ to: "/" });
         }
-        if (isSuccess) {
+        if (isSuccess && token) {
             dispatch(setUser(profileData.data));
             return;
         }
