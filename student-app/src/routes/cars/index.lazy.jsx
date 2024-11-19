@@ -29,8 +29,8 @@ function SearchCars() {
 
   const { data, isSuccess, isPending, isError } = useQuery({
     queryKey: ["searchcars"],
-    queryFn: () => getCarsByQueryParams(),
-    enabled: !!token
+    queryFn:  () =>  getCarsByQueryParams(),
+    enabled: !!token,
   });
 
   useEffect(() => {

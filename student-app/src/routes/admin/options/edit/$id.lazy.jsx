@@ -24,31 +24,32 @@ function EditOption() {
   const navigate = useNavigate();
   const [option, setOption] = useState("");
 
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ["option", id],
+  const {
+    data: editoption,
+    isSuccess,
+    isError,
+  } = useQuery({
+    queryKey: ["editoption", id],
     queryFn: () => getDetailOption(id),
-    onSuccess: (result) => {
-      if (result?.success) {
-        setOption(result.data?.name);
-      }
-    },
     enabled: !!id,
   });
 
-  const mutation = useMutation({
-    mutationFn: (newOption) => updateOption(id, newOption),
-    onSuccess: (result) => {
-      if (result?.success) {
-        toast.success("Option updated successfully!");
-        navigate({ to: "/admin/options" });
-      } else {
-        toast.error(result?.message);
-      }
+  const { mutate: update, isPending: isUpdateProcessing } = useMutation({
+    mutationFn: (request) => updateOption(id, request),
+    onSuccess: () => {
+      toast.success("Options updated successfully!");
+      navigate({ to: "/admin/options" });
     },
-    onError: () => {
-      toast.error("An error occurred while updating the option.");
+    onError: (error) => {
+      toast.error(error?.message);
     },
   });
+
+  useEffect(() => {
+    if (isSuccess) {
+      setOption(editoption.data?.option);
+    }
+  }, [isSuccess, editoption]);
 
   if (isError) {
     navigate({ to: "/admin/options" });
@@ -58,18 +59,12 @@ function EditOption() {
   const onSubmit = async (event) => {
     event.preventDefault();
     const request = { option };
-    mutation.mutate(request);
+    update(request);
   };
 
   function onClickBack() {
     navigate({ to: "/admin/options" });
   }
-
-  if (isLoading || mutation.isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  console.log(data);
 
   return (
     <Row
@@ -103,7 +98,7 @@ function EditOption() {
                       type="text"
                       placeholder="option"
                       required
-                      value={data.option}
+                      value={option}
                       onChange={(event) => setOption(event.target.value)}
                     />
                   </Col>
@@ -112,7 +107,7 @@ function EditOption() {
                   <Button
                     type="submit"
                     variant="primary"
-                    disabled={mutation.isLoading}
+                    disabled={isUpdateProcessing}
                   >
                     Update option
                   </Button>

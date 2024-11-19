@@ -1,5 +1,5 @@
 import { createLazyFileRoute, useNavigate } from '@tanstack/react-router'
-import { useState, useEffect } from 'react'
+import { useState, useEffect } from "react";
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Card from 'react-bootstrap/Card'
@@ -25,49 +25,42 @@ function EditSpec() {
   const navigate = useNavigate()
   const [spec, setSpec] = useState('')
 
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ["spec", id],
+  const { data: editspec, isSuccess, isError } = useQuery({
+    queryKey: ["editspec", id],
     queryFn: () => getDetailSpec(id),
-    onSuccess: (result) => {
-      if (result?.success) {
-        setSpec(result.data?.spec);
-      }
-    },
     enabled: !!id,
   });
 
-  const mutation = useMutation({
-    mutationFn: (newOption) => updateSpec(id, newOption),
-    onSuccess: (result) => {
-      if (result?.success) {
+  const { mutate: update, isPending: isUpdateProcessing } = useMutation({
+    mutationFn: (request) => updateSpec(id, request),
+    onSuccess: () => {
         toast.success("Spec updated successfully!");
-        navigate({ to: "/admin/specs" });
-      } else {
-        toast.error(result?.message);
-      }
-    },
-    onError: () => {
-      toast.error("An error occurred while updating the spec.");
-    },
-  });
+        navigate({ to: "/admin/specs" })
+      }, 
+        onError: (error) => {
+        toast.error(error?.message);
+      },
+  })
+
+   useEffect(() => {
+     if (isSuccess) {
+       setSpec(editspec.data?.spec);
+     }
+   }, [isSuccess, editspec])
 
   if (isError) {
     navigate({ to: "/admin/specs" });
-    return null;
+    return;
   }
 
   const onSubmit = async (event) => {
     event.preventDefault()
     const request = { spec };
-    mutation.mutate(request);
+    update(request);
   }
 
   function onClickBack() {
-    navigate({ to: "/admin/options" });
-  }
-
-  if (isLoading || mutation.isLoading) {
-    return <div>Loading...</div>;
+    navigate({ to: "/admin/specs" });
   }
 
   return (
@@ -102,7 +95,7 @@ function EditSpec() {
                       type="text"
                       placeholder="Spec"
                       required
-                      value={data.option}
+                      value={spec}
                       onChange={(event) => setSpec(event.target.value)}
                     />
                   </Col>
@@ -110,7 +103,7 @@ function EditSpec() {
                 <div className="d-grid gap-2">
                   <Button
                     type="submit"
-                    disabled={mutation.isLoading}
+                    disabled={isUpdateProcessing}
                     variant="primary"
                   >
                     Update Spec

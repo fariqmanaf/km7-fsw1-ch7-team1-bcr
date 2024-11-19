@@ -1,5 +1,5 @@
 import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
@@ -25,51 +25,48 @@ export const Route = createLazyFileRoute("/admin/manufactures/edit/$id")({
 function EditManufacture() {
   const { id } = Route.useParams();
   const navigate = useNavigate();
-  const [manufacture, setManufacture] = useState("");
+  const [name, setManufacture] = useState("");
 
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ["manufacture", id],
+  const {
+    data: Editmanufacture,
+    isSuccess,
+    isError,
+  } = useQuery({
+    queryKey: ["Editmanufacture", id],
     queryFn: () => getDetailManufacture(id),
-    onSuccess: (result) => {
-      if (result?.success) {
-        setManufacture(result.data?.name);
-      }
-    },
     enabled: !!id,
   });
 
-  const mutation = useMutation({
-    mutationFn: (newManufacture) => updateManufacture(id, newManufacture),
-    onSuccess: (result) => {
-      if (result?.success) {
-        toast.success("Manufacture updated successfully!");
-        navigate({ to: "/admin/manufactures" });
-      } else {
-        toast.error(result?.message);
-      }
+  const { mutate: update, isPending: isUpdateProcessing } = useMutation({
+    mutationFn: (request) => updateManufacture(id, request),
+    onSuccess: () => {
+      toast.success("Manufacture updated successfully!");
+      navigate({ to: "/admin/manufactures" });
     },
-    onError: () => {
-      toast.error("An error occurred while updating the manufacture.");
+    onError: (error) => {
+      toast.error(error?.message);
     },
   });
+  
+   useEffect(() => {
+     if (isSuccess) {
+       setManufacture(Editmanufacture.data?.name);
+     }
+   }, [isSuccess, Editmanufacture]);
 
   if (isError) {
     navigate({ to: "/admin/manufactures" });
-    return null;
+    return;
   }
 
   const onSubmit = async (event) => {
     event.preventDefault();
-    const request = { manufacture };
-    mutation.mutate(request);
+    const request = { name };
+    update(request);
   };
 
   function onClickBack() {
     navigate({ to: "/admin/manufactures" });
-  }
-
-  if (isLoading || mutation.isLoading) {
-    return <div>Loading...</div>;
   }
 
   return (
@@ -103,7 +100,7 @@ function EditManufacture() {
                     <Form.Control
                       type="text"
                       required
-                      value={data?.name}
+                      value={name}
                       onChange={(event) => setManufacture(event.target.value)}
                     />
                   </Col>
@@ -112,7 +109,7 @@ function EditManufacture() {
                   <Button
                     type="submit"
                     variant="primary"
-                    disabled={mutation.isLoading}
+                    disabled={isUpdateProcessing}
                   >
                     Update Manufacture
                   </Button>
