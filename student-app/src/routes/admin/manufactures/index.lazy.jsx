@@ -1,5 +1,7 @@
 import { createLazyFileRoute, Link } from "@tanstack/react-router";
 import { useSelector } from "react-redux";
+import { useRef, useLayoutEffect } from "react";
+import gsap from "gsap";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
@@ -7,22 +9,42 @@ import Table from "react-bootstrap/Table";
 import { getManufactures } from "../../../service/manufactures";
 import ManufactureItem from "../../../components/Manufacture/ManufactureItem";
 import ReactLoading from "react-loading";
-import NavigationBar from "../../../components/Navbar";
 import SideNavigationBar from "../../../components/SideNav";
 import { useQuery } from "@tanstack/react-query";
+import Protected from "../../../components/Auth/Protected";
 
 export const Route = createLazyFileRoute("/admin/manufactures/")({
-  component: Manufacture,
+  component: () => (
+    <Protected roles={[1]}>
+      <Manufacture />
+    </Protected>
+  ),
 });
 
 function Manufacture() {
   const { token, user } = useSelector((state) => state.auth);
 
-  const { data, isSuccess, isLoading } = useQuery({
+  const tableRef = useRef(null);
+  const containerRef = useRef(null);
+
+  const { data, isSuccess, isPending } = useQuery({
     queryKey: ["manufactures"],
     queryFn: () => getManufactures(),
     enabled: !!token,
   });
+
+  useLayoutEffect(() => {
+    gsap.context(() => {
+      gsap.set(tableRef.current, { opacity: 0, y: 50 });
+
+      gsap.to(tableRef.current, {
+        opacity: 1,
+        y: 0,
+        duration: 1,
+        ease: "power2.out",
+      });
+    }, containerRef);
+  }, [isPending]);
 
   if (!token) {
     return (
@@ -39,7 +61,7 @@ function Manufacture() {
     );
   }
 
-  if (isLoading) {
+  if (isPending) {
     return (
       <div
         style={{ height: "90vh" }}
@@ -62,7 +84,7 @@ function Manufacture() {
       <div>
         <SideNavigationBar />
       </div>
-      <Row className="d-flex justify-content-between px-5 my-2 mt-4">
+      <Row className="mt-5 ms-xl-5" ref={containerRef}>
         <Row>
           <Col className="d-flex justify-content-between px-5 mb-4">
             <Row>
@@ -93,7 +115,15 @@ function Manufacture() {
         {manufactures.length === 0 ? (
           <h1>Manufacture data is not found!</h1>
         ) : (
-          <Table striped bordered hover>
+          <Table
+            ref={tableRef}
+            className="px-5"
+            striped
+            bordered
+            hover
+            fluid
+            style={{ marginLeft: "3rem", flex: 5 }}
+          >
             <thead>
               <tr>
                 <th style={{ textAlign: "center", width: "8%" }}>Id</th>
