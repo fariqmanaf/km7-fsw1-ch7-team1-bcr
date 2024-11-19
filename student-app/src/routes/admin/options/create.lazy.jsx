@@ -1,59 +1,66 @@
-import { createLazyFileRoute, useNavigate } from '@tanstack/react-router'
-import { useState } from 'react'
-import Row from 'react-bootstrap/Row'
-import Col from 'react-bootstrap/Col'
-import Card from 'react-bootstrap/Card'
-import Form from 'react-bootstrap/Form'
-import Button from 'react-bootstrap/Button'
-import { createOption } from '../../../service/options'
-import { IoArrowBackCircle } from 'react-icons/io5'
-import { toast } from 'react-toastify'
-import Protected from '../../../components/Auth/Protected'
+import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+import Card from "react-bootstrap/Card";
+import Form from "react-bootstrap/Form";
+import Button from "react-bootstrap/Button";
+import { createOption } from "../../../service/options";
+import { IoArrowBackCircle } from "react-icons/io5";
+import { toast } from "react-toastify";
+import Protected from "../../../components/Auth/Protected";
+import { useMutation } from "@tanstack/react-query";
 
-export const Route = createLazyFileRoute('/admin/options/create')({
+export const Route = createLazyFileRoute("/admin/options/create")({
   component: () => (
     <Protected roles={[1]}>
       <CreateOption />
     </Protected>
   ),
-})
+});
 
 function CreateOption() {
-  const navigate = useNavigate()
-  const [option, setOption] = useState('')
+  const navigate = useNavigate();
+  const [option, setOption] = useState("");
+
+  const { mutate: create, isPending } = useMutation({
+    mutationFn: (request) => createOption(request),
+    onSuccess: () => {
+      navigate({ to: "/admin/options" });
+    },
+    onError: (error) => {
+      toast.error(error?.message);
+    },
+  });
 
   const onSubmit = async (event) => {
-    event.preventDefault()
+    event.preventDefault();
 
-    const request = { option }
-    const result = await createOption(request)
-    if (result?.success) {
-      toast.success('Option created successfully!')
-      navigate({ to: '/admin/options' })
-    } else {
-      toast.error(result?.message)
-    }
-  }
+    const request = {
+      option,
+    };
+    create(request);
+  };
 
   function onClickBack() {
-    navigate({ to: '/admin/options' })
+    navigate({ to: "/admin/options" });
   }
 
   return (
     <Row
       className="d-flex flex justify-content-center align-items-center"
-      style={{ height: '50vh' }}
+      style={{ height: "50vh" }}
     >
       <IoArrowBackCircle
         className="position-absolute"
         role="button"
         onClick={onClickBack}
         style={{
-          color: '#0d6efd',
-          width: '7vw',
-          height: '7vh',
-          top: '6rem',
-          left: '7rem',
+          color: "#0d6efd",
+          width: "7vw",
+          height: "7vh",
+          top: "6rem",
+          left: "7rem",
         }}
       />
       <Row className="mt-5">
@@ -87,5 +94,5 @@ function CreateOption() {
         </Col>
       </Row>
     </Row>
-  )
+  );
 }

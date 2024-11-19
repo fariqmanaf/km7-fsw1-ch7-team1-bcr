@@ -16,7 +16,7 @@ export const Route = createRootRoute({
             {/* Sidebar and Content Wrapper */}
             <div style={{ display: "flex" }}>
                 {/* Main Content */}
-                <Container fluid style={{ flex: 1 }}>
+                <Container fluid style={{ marginLeft: "4.5rem", flex: 5 }}>
                     <Outlet />
                 </Container>
             </div>
