@@ -6,9 +6,12 @@ import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import { useDispatch, useSelector } from "react-redux";
 import { setToken } from "../redux/slices/auth";
-import { login } from "../service/auth";
+import { login, loginGoogle } from "../service/auth";
 import { toast } from "react-toastify";
 import NavigationBar from "../components/Navbar";
+import { FaGoogle } from "react-icons/fa";
+import { useGoogleLogin } from "@react-oauth/google";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 export const Route = createLazyFileRoute("/login")({
     component: Login,
@@ -22,6 +25,19 @@ function Login() {
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+
+    const { mutate: googleLoginMutation, isS } = useMutation({
+        mutationFn: async (access_token) => await loginGoogle(access_token),
+        onError: (error) => {
+            toast.error(error.message);
+        },
+        onSuccess: (result) => {
+            if (result.success) {
+                dispatch(setToken(result.data.token));
+                return;
+            }
+        },
+    });
 
     useEffect(() => {
         if (user) {
@@ -49,6 +65,12 @@ function Login() {
 
         toast.error(result.message);
     };
+
+    const googleLogin = useGoogleLogin({
+        onSuccess: async (tokenResponse) =>
+            await googleLoginMutation(tokenResponse.access_token),
+        onError: (error) => console.error(error),
+    });
 
     return (
         <>
@@ -127,6 +149,18 @@ function Login() {
                             <div className="d-grid gap-2">
                                 <Button type="submit" variant="primary">
                                     Sign In
+                                </Button>
+                            </div>
+                            <div className="d-grid gap-2 mt-3">
+                                <Button
+                                    type="button"
+                                    variant="primary"
+                                    onClick={() => googleLogin()}
+                                >
+                                    <span className="me-2">
+                                        <FaGoogle />
+                                    </span>
+                                    Sign In With GuluGulu
                                 </Button>
                             </div>
                         </Form>

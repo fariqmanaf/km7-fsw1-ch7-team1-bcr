@@ -22,8 +22,6 @@ export const Route = createLazyFileRoute("/cars/")({
 });
 
 function SearchCars() {
-    const navigate = useNavigate();
-
     const [cars, setCars] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [capacity, setCapacity] = useState(0);
@@ -137,6 +135,7 @@ function SearchCars() {
                                         className="form-control"
                                         id="rentalDate"
                                         name="rentalDate"
+                                        defaultValue={search.availableAt}
                                         onChange={(e) => {
                                             setAvailableAt(e.target.value);
                                         }}
@@ -153,6 +152,7 @@ function SearchCars() {
                                             className="form-control"
                                             id="transmission"
                                             name="transmission"
+                                            defaultValue={search.transmission}
                                             onChange={(e) => {
                                                 setTransmission(e.target.value);
                                             }}
@@ -182,6 +182,7 @@ function SearchCars() {
                                             id="passengerCount"
                                             name="passengerCount"
                                             placeholder="0"
+                                            defaultValue={search.capacity}
                                             onChange={(e) => {
                                                 setCapacity(
                                                     parseInt(e.target.value)
@@ -301,7 +302,7 @@ function SearchCars() {
                                             <Col className="d-flex gap-2">
                                                 <Button
                                                     as={Link}
-                                                    href={`/admin/cars/${car.id}`}
+                                                    href={`/cars/${car.id}`}
                                                     className="text-white fw-semibold d-flex justify-content-center align-content-center"
                                                     style={{
                                                         height: "2.5rem",

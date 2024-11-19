@@ -41,7 +41,7 @@ const NavigationBar = () => {
             dispatch(setToken(null));
             navigate({ to: "/" });
         }
-    }, [profileData]);
+    }, [token, profileData, isError, isSuccess]);
 
     const logout = (event) => {
         event.preventDefault();
