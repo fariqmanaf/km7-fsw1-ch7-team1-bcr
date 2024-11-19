@@ -6,127 +6,152 @@ import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import { useDispatch, useSelector } from "react-redux";
 import { setToken } from "../redux/slices/auth";
-import { login } from "../service/auth";
+import { login, loginGoogle } from "../service/auth";
 import { toast } from "react-toastify";
-import { useMutation } from "@tanstack/react-query";
+import NavigationBar from "../components/Navbar";
+import { FaGoogle } from "react-icons/fa";
+import { useGoogleLogin } from "@react-oauth/google";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 export const Route = createLazyFileRoute("/login")({
-  component: Login,
+    component: Login,
 });
 
 function Login() {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
 
-  const { user } = useSelector((state) => state.auth);
+    const { user } = useSelector((state) => state.auth);
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
 
-  useEffect(() => {
-    if (user) {
-      {
-        user.role_id === 1
-          ? navigate({ to: "/admin/cars" })
-          : navigate({ to: "/cars" });
-      }
-    }
-  }, [navigate, user]);
+    const { mutate: googleLoginMutation, isS } = useMutation({
+        mutationFn: async (access_token) => await loginGoogle(access_token),
+        onError: (error) => {
+            toast.error(error.message);
+        },
+        onSuccess: (result) => {
+            if (result.success) {
+                dispatch(setToken(result.data.token));
+                return;
+            }
+        },
+    });
 
-  const { mutate: loginUser } = useMutation({
-    mutationFn: (body) => {
-      return login(body);
-    },
-    onSuccess: (data) => {
-      dispatch(setToken(data?.token));
-    },
-    onError: (err) => {
-      toast.error(err?.message);
-    },
-  });
+    useEffect(() => {
+        if (user) {
+            {
+                user.role_id === 1
+                    ? navigate({ to: "/admin/cars" })
+                    : navigate({ to: "/cars" });
+            }
+        }
+    }, [navigate, user]);
 
-  const onSubmit = async (event) => {
-    event.preventDefault();
+    const { mutate: loginUser } = useMutation({
+        mutationFn: (body) => {
+            return login(body);
+        },
+        onSuccess: (data) => {
+            dispatch(setToken(data?.token));
+        },
+        onError: (err) => {
+            toast.error(err?.message);
+        },
+    });
 
-    const body = {
-      email,
-      password,
+    const onSubmit = async (event) => {
+        event.preventDefault();
+
+        const body = {
+            email,
+            password,
+        };
+
+        const googleLogin = useGoogleLogin({
+            onSuccess: async (tokenResponse) =>
+                await googleLoginMutation(tokenResponse.access_token),
+            onError: (error) => console.error(error),
+        });
+
+        return (
+            <>
+                <Row className="vh-100 m-0">
+                    <Col
+                        md={9}
+                        className="d-flex align-items-center justify-content-center p-0"
+                    >
+                        <img
+                            src="/assets/images/image2.png"
+                            alt="Pict"
+                            style={{
+                                width: "100%",
+                                height: "100vh",
+                                objectFit: "cover",
+                                margin: 0,
+                                padding: 0,
+                            }}
+                        />
+                    </Col>
+                    <Col
+                        md={3}
+                        className="d-flex align-items-center justify-content-center"
+                    >
+                        <div className="login-page">
+                            <div>
+                                <img
+                                    src="/assets/images/logo.png"
+                                    alt=""
+                                    width="90"
+                                    height="32"
+                                />
+                                <h3>
+                                    <b>Welcome, Admin BCR</b>
+                                </h3>
+                            </div>
+                            <Form onSubmit={onSubmit}>
+                                <Form.Group
+                                    as={Row}
+                                    className="mb-3"
+                                    controlId="email"
+                                >
+                                    <Form.Label column sm={3}>
+                                        Email
+                                    </Form.Label>
+                                    <Form.Control
+                                        type="email"
+                                        placeholder="Contoh: johndee@gmail.com"
+                                        required
+                                        value={email}
+                                        onChange={(event) =>
+                                            setEmail(event.target.value)
+                                        }
+                                    />
+                                </Form.Group>
+
+                                <div className="d-grid gap-2">
+                                    <Button type="submit" variant="primary">
+                                        Sign In
+                                    </Button>
+                                </div>
+                                <div className="d-grid gap-2 mt-3">
+                                    <Button
+                                        type="button"
+                                        variant="primary"
+                                        onClick={() => googleLogin()}
+                                    >
+                                        <span className="me-2">
+                                            <FaGoogle />
+                                        </span>
+                                        Sign In With GuluGulu
+                                    </Button>
+                                </div>
+                            </Form>
+                        </div>
+                    </Col>
+                </Row>
+            </>
+        );
     };
-
-    loginUser(body);
-  };
-
-  return (
-    <>
-      <Row className="vh-100 m-0">
-        <Col
-          md={9}
-          className="d-flex align-items-center justify-content-center p-0"
-        >
-          <img
-            src="/assets/images/image2.png"
-            alt="Pict"
-            style={{
-              width: "100%",
-              height: "100vh",
-              objectFit: "cover",
-              margin: 0,
-              padding: 0,
-            }}
-          />
-        </Col>
-        <Col
-          md={3}
-          className="d-flex align-items-center justify-content-center"
-        >
-          <div className="login-page">
-            <div>
-              <img
-                src="/assets/images/logo.png"
-                alt=""
-                width="90"
-                height="32"
-              />
-              <h3>
-                <b>Welcome, Admin BCR</b>
-              </h3>
-            </div>
-            <Form onSubmit={onSubmit}>
-              <Form.Group as={Row} className="mb-3" controlId="email">
-                <Form.Label column sm={3}>
-                  Email
-                </Form.Label>
-                <Form.Control
-                  type="email"
-                  placeholder="Contoh: johndee@gmail.com"
-                  required
-                  value={email}
-                  onChange={(event) => setEmail(event.target.value)}
-                />
-              </Form.Group>
-
-              <Form.Group as={Row} className="mb-3" controlId="password">
-                <Form.Label column sm={3}>
-                  Password
-                </Form.Label>
-                <Form.Control
-                  type="password"
-                  placeholder="6+ karakter"
-                  required
-                  value={password}
-                  onChange={(event) => setPassword(event.target.value)}
-                />
-              </Form.Group>
-
-              <div className="d-grid gap-2">
-                <Button type="submit" variant="primary">
-                  Sign In
-                </Button>
-              </div>
-            </Form>
-          </div>
-        </Col>
-      </Row>
-    </>
-  );
 }
