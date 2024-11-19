@@ -1,11 +1,14 @@
 import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { useDispatch, useSelector } from "react-redux";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
-import { useSelector } from "react-redux";
 import { register } from "../service/auth";
+import { setToken } from "../redux/slices/auth";
+import { toast } from "react-toastify";
 
 export const Route = createLazyFileRoute("/register")({
   component: Register,
@@ -13,7 +16,7 @@ export const Route = createLazyFileRoute("/register")({
 
 function Register() {
   const navigate = useNavigate();
-
+  const dispatch = useDispatch();
   const { token } = useSelector((state) => state.auth);
 
   const [name, setName] = useState("");
@@ -22,39 +25,42 @@ function Register() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [profilePicture, setProfilePicture] = useState(undefined);
 
-  useEffect(() => {
-    // get token from local storage
-    if (token) {
-      navigate({ to: "/" });
-    }
-  }, [token, navigate]);
+  if (token) {
+    navigate({ to: "/cars" });
+  }
 
-  const onSubmit = async (event) => {
+  const { mutate: registerUser } = useMutation({
+    mutationFn: (body) => {
+      return register(body);
+    },
+    onSuccess: (data) => {
+      // set token to global state
+      dispatch(setToken(data.data.token));
+
+      // redirect to home
+      navigate({ to: "/cars" });
+    },
+    onError: (err) => {
+      toast.error(err?.message);
+    },
+  });
+
+  const onSubmit = (event) => {
     event.preventDefault();
 
-    if (password != confirmPassword) {
-      alert("Password and password confirmation must be same!");
+    if (password !== confirmPassword) {
+      toast.error("Password and confirmation must match!");
+      return;
     }
 
-    // hit API here
     const request = {
       name,
       email,
       password,
       profilePicture,
     };
-    const result = await register(request);
-    if (result.success) {
-      // save token to local storage
-      localStorage.setItem("token", result.data.token);
 
-      // redirect to home
-      window.location = "/";
-
-      return;
-    }
-
-    alert(result.message);
+    registerUser(request);
   };
 
   return (
@@ -80,7 +86,7 @@ function Register() {
           md={5}
           className="d-flex align-items-center justify-content-center"
         >
-          <Row >
+          <Row>
             <div className="login-page">
               <div>
                 <img
@@ -189,3 +195,5 @@ function Register() {
     </>
   );
 }
+
+export default Register;
