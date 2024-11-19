@@ -60,7 +60,6 @@ function Manufacture() {
   return (
     <>
       <div>
-        <NavigationBar />
         <SideNavigationBar />
       </div>
       <Row className="d-flex justify-content-between px-5 my-2 mt-4">

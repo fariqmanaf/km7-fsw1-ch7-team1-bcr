@@ -7,7 +7,6 @@ import Button from "react-bootstrap/Button";
 import { getOptions } from "../../../service/options";
 import OptionItem from "../../../components/Option/OptionItem";
 import ReactLoading from "react-loading";
-import NavigationBar from "../../../components/Navbar";
 import SideNavigationBar from "../../../components/SideNav";
 import { useQuery } from "@tanstack/react-query";
 
@@ -60,7 +59,6 @@ function Option() {
   return (
     <>
       <div>
-        <NavigationBar />
         <SideNavigationBar />
       </div>
 

@@ -1,5 +1,4 @@
 import { createLazyFileRoute, Link } from '@tanstack/react-router'
-import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
@@ -8,66 +7,56 @@ import Button from 'react-bootstrap/Button'
 import { getSpecs } from '../../../service/spec'
 import SpecItem from '../../../components/Spec/SpecItem'
 import ReactLoading from 'react-loading'
-import NavigationBar from "../../../components/Navbar";
 import SideNavigationBar from "../../../components/SideNav";
+import { useQuery } from "@tanstack/react-query";
 
 export const Route = createLazyFileRoute('/admin/specs/')({
   component: Spec,
 })
 
 function Spec() {
-  const { token, user } = useSelector((state) => state.auth)
-  const [specs, setSpecs] = useState([])
-  const [isLoading, setIsLoading] = useState(false)
+  const { token, user } = useSelector((state) => state.auth);
 
-  useEffect(() => {
-    const getSpecData = async () => {
-      setIsLoading(true)
-      const result = await getSpecs()
-      if (result.success && result.data) {
-        setSpecs(result.data)
-      }
-      setIsLoading(false)
-    }
-
-    if (token) {
-      getSpecData()
-    }
-  }, [token])
+  const { data, isSuccess, isLoading } = useQuery({
+    queryKey: ["specs"],
+    queryFn: () => getSpecs(),
+    enabled: !!token,
+  });
 
   if (!token) {
     return (
       <Row
-        style={{ height: '90vh' }}
+        style={{ height: "90vh" }}
         className="d-flex justify-content-center align-items-center"
       >
         <Col>
           <h4 className="text-center">Please login first to get specs data!</h4>
         </Col>
       </Row>
-    )
+    );
   }
-
+  
   if (isLoading) {
     return (
       <div
-        style={{ height: '90vh' }}
+        style={{ height: "90vh" }}
         className="d-flex justify-content-center align-items-center"
       >
         <ReactLoading
-          type={'spin'}
-          color={'#0d6efd'}
-          height={'5%'}
-          width={'5%'}
+          type={"spin"}
+          color={"#0d6efd"}
+          height={"5%"}
+          width={"5%"}
         />
       </div>
-    )
+    );
   }
+
+  const specs  = isSuccess ? data.data : [];
 
   return (
     <>
       <div>
-        <NavigationBar />
         <SideNavigationBar />
       </div>
 
