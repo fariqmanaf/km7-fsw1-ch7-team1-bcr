@@ -42,7 +42,7 @@ function LandingPage() {
                     </div>
                     <div className="col-md-6">
                         <img
-                            src="../public/assets/images/landing/img_car.png"
+                            src="/assets/images/landing/img_car.png"
                             className="img-fluid"
                             alt="Mercedes"
                             style={{ marginTop: "16px" }}
@@ -55,7 +55,7 @@ function LandingPage() {
                     {/* Left column */}
                     <div className="col-md-6 d-flex justify-content-center my-5">
                         <img
-                            src="../public/assets/images/landing/img_service.png"
+                            src="/assets/images/landing/img_service.png"
                             className="img-fluid"
                             alt="ourservice"
                         />
@@ -84,7 +84,7 @@ function LandingPage() {
                         ].map((service, index) => (
                             <p key={index}>
                                 <img
-                                    src="../public/assets/images/landing/checklist.png"
+                                    src="/assets/images/landing/checklist.png"
                                     alt="check"
                                     style={{ marginRight: "8px" }}
                                 />
@@ -106,22 +106,22 @@ function LandingPage() {
                     {/* Card data */}
                     {[
                         {
-                            imgSrc: "../public/assets/images/landing/icon_complete.png",
+                            imgSrc: "/assets/images/landing/icon_complete.png",
                             title: "Mobil Lengkap",
                             text: "Tersedia banyak pilihan mobil, kondisi masih baru, bersih dan terawat",
                         },
                         {
-                            imgSrc: "../public/assets/images/landing/icon_price.png",
+                            imgSrc: "/assets/images/landing/icon_price.png",
                             title: "Harga Murah",
                             text: "Harga murah dan bersaing, bisa bandingkan harga kami dengan rental mobil lain",
                         },
                         {
-                            imgSrc: "../public/assets/images/landing/icon_24hrs.png",
+                            imgSrc: "/assets/images/landing/icon_24hrs.png",
                             title: "Layanan 24 Jam",
                             text: "Siap melayani kebutuhan Anda selama 24 jam nonstop. Kami juga tersedia di akhir minggu",
                         },
                         {
-                            imgSrc: "../public/assets/images/landing/icon_professional.png",
+                            imgSrc: "/assets/images/landing/icon_professional.png",
                             title: "Sopir Profesional",
                             text: "Sopir yang profesional, berpengalaman, jujur, ramah dan selalu tepat waktu",
                         },
@@ -167,7 +167,7 @@ function LandingPage() {
                                 <div className="row">
                                     <div className="col-12 col-md-4 d-flex justify-content-center mb-3 mb-md-0">
                                         <img
-                                            src="../public/assets/images/landing/carousel1.png"
+                                            src="/assets/images/landing/carousel1.png"
                                             className="img-fluid w-50"
                                             alt="test"
                                         />
@@ -176,7 +176,7 @@ function LandingPage() {
                                         <div className="row justify-content-center">
                                             <div className="col-12 text-center">
                                                 <img
-                                                    src="../public/assets/images/landing/Rate.png"
+                                                    src="/assets/images/landing/Rate.png"
                                                     className="img-fluid w-25 mb-3"
                                                     alt="rate"
                                                 />
@@ -209,7 +209,7 @@ function LandingPage() {
                             <div className="row">
                                 <div className="col-12 col-md-4 d-flex justify-content-center mb-3 mb-md-0">
                                     <img
-                                        src="../public/assets/images/landing/carousel2.png"
+                                        src="/assets/images/landing/carousel2.png"
                                         className="img-fluid w-50"
                                         alt="test"
                                     />
@@ -217,7 +217,7 @@ function LandingPage() {
                                 <div className="col-12 col-md-8">
                                     <div className="row justify-content-center">
                                         <img
-                                            src="../public/assets/images/landing/Rate.png"
+                                            src="/assets/images/landing/Rate.png"
                                             className="img-fluid w-25 mb-3"
                                             alt="rate"
                                         />
@@ -242,7 +242,7 @@ function LandingPage() {
                             <div className="row">
                                 <div className="col-12 col-md-4 d-flex justify-content-center mb-3 mb-md-0">
                                     <img
-                                        src="../public/assets/images/landing/blackpink.jpg"
+                                        src="/assets/images/landing/blackpink.jpg"
                                         className="img-fluid w-50 rounded-circle"
                                         alt="blackpink"
                                     />
@@ -250,7 +250,7 @@ function LandingPage() {
                                 <div className="col-12 col-md-8">
                                     <div className="row justify-content-center">
                                         <img
-                                            src="../public/assets/images/landing/Rate.png"
+                                            src="/assets/images/landing/Rate.png"
                                             className="img-fluid w-25 mb-3"
                                             alt="rate"
                                         />
@@ -603,7 +603,7 @@ function LandingPage() {
                         </div>
                         <div className="row">
                             <img
-                                src="../public/assets/images/landing/list item.png"
+                                src="/assets/images/landing/list item.png"
                                 alt="sosmed"
                                 className="img-fluid w-75 w-lg-100"
                                 style={{ marginBottom: "16px" }}
@@ -618,7 +618,7 @@ function LandingPage() {
                         </div>
                         <div className="row">
                             <img
-                                src="../public/assets/images/landing/logo binar.svg"
+                                src="/assets/images/landing/logo binar.svg"
                                 alt="Binar"
                                 className="img-fluid w-50 w-lg-75"
                             />
